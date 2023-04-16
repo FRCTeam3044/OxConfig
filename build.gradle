@@ -42,7 +42,7 @@ publishing {
       name = "GitHubPackages"
       url = "https://maven.pkg.github.com/nab138/AutoConfig"
       credentials {
-        username = System.getenv("ACTOR")
+        username = System.getenv("USERNAME")
         password = System.getenv("TOKEN")
       }
     }
