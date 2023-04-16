@@ -1,2 +1,3 @@
 rootProject.name = 'auto-config'
-
+sourceCompatibility = 11
+targetCompatibility = 11
