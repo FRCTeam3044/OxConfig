@@ -5,7 +5,7 @@ AutoConfig is a modular and flexible utility for automatically setting up a YAML
 You will need to add the github packages maven repository to the repositories section in `build.gradle`
 ```gradle
 maven {
-    url = uri("https://maven.pkg.github.com/nab138/AutoConfig")
+    url = uri("https://maven.pkg.github.com/FRCTeam3044/AutoConfig")
     credentials {
         username = "username"
         password = "token"
