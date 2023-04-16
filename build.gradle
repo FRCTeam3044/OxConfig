@@ -1,3 +1,6 @@
+sourceCompatibility = 11
+targetCompatibility = 11
+
 plugins {
     id 'java-library'
     id "edu.wpi.first.GradleRIO" version "2023.4.3"
