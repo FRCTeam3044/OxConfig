@@ -1,5 +1,5 @@
-# AutoConfig
-AutoConfig is a modular and flexible utility for automatically setting up a YAML based config file and tuning over networktables.
+# OxConfig
+OxConfig is a modular and flexible utility for automatically setting up a YAML based config file and tuning over networktables.
 
 ## Installation
 You will need to add the github packages maven repository to the repositories section in `build.gradle`
