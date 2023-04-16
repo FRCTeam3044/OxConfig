@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 group 'me.nabdev.autoconfig'
-version '0.0.1'
+version '0.0.2'
 
 repositories {
     mavenCentral()
@@ -42,7 +42,7 @@ publishing {
   repositories {
     maven {
       name = "GitHubPackages"
-      url = "https://maven.pkg.github.com/nab138/AutoConfig"
+      url = "https://maven.pkg.github.com/FRCTeam3044/AutoConfig"
       credentials {
         username = System.getenv("USERNAME")
         password = System.getenv("TOKEN")
