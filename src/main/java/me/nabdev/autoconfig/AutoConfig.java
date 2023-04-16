@@ -1,4 +1,4 @@
-package me.nabdev;
+package me.nabdev.autoconfig;
 
 import java.io.File;
 import java.io.FileWriter;

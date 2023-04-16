@@ -1,4 +1,4 @@
-package me.nabdev;
+package me.nabdev.autoconfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;

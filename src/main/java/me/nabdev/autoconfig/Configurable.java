@@ -1,4 +1,4 @@
-package me.nabdev;
+package me.nabdev.autoconfig;
 
 public interface Configurable<T> {
     public T get();

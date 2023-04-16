@@ -1,4 +1,4 @@
-package me.nabdev;
+package me.nabdev.autoconfig;
 
 public class ConfigurableParameter<T> implements Configurable<T> {
     T value;
