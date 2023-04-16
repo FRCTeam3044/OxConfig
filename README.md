@@ -19,7 +19,7 @@ If you don't have a token, [contact nab138](mailto:nab@nabdev.me). This package 
 After adding the repo, add the folowing to dependencies in your build.grade:
 `implementation 'me.nabdev.autoconfig:autoconfig:0.0.2'`
 
-## Quickstart
+## Getting Started
 Check out the [wiki](https://github.com/FRCTeam3044/AutoConfig/wiki) for help on getting started.
 
 ## Links
