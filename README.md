@@ -24,3 +24,4 @@ Check out the [wiki](https://github.com/nab138/AutoConfig/wiki) for help on gett
 - [eo-yaml](https://github.com/decorators-squad/eo-yaml)
 - [JSON-java](https://github.com/stleary/JSON-java)
 - [allwpilib](https://github.com/wpilibsuite/allwpilib)
+- [REV Lib](https://docs.revrobotics.com/sparkmax/software-resources/spark-max-api-information)
