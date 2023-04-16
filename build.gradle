@@ -1,10 +1,12 @@
-sourceCompatibility = 11
-targetCompatibility = 11
-
 plugins {
     id 'java-library'
     id "edu.wpi.first.GradleRIO" version "2023.4.3"
     id 'maven-publish'
+}
+
+compileJava   {
+  sourceCompatibility = '11'
+  targetCompatibility = '11'
 }
 
 group 'me.nabdev'
