@@ -18,7 +18,7 @@ After adding the repo, add the folowing to dependencies in your build.grade:
 `implementation 'me.nabdev.autoconfig:autoconfig:0.0.1'`
 
 ## Quickstart
-Check out the [wiki](https://github.com/nab138/AutoConfig/wiki) for help on getting started.
+Check out the [wiki](https://github.com/FRCTeam3044/AutoConfig/wiki) for help on getting started.
 
 ## Links
 - [eo-yaml](https://github.com/decorators-squad/eo-yaml)
