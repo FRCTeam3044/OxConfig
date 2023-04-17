@@ -7,6 +7,8 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
     private Consumer<T> setter;
     private String key;
     private String prettyName;
+    private ConfigurableClass myClass;
+
     private boolean simRealSpecific;
 
     @Override
@@ -33,19 +35,35 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
     }
 
     /**
-     * Creates a new ConfigurableParameter with the given value and key, and registers it with the OxConfig
+     * Creates a new ConfigurableClassParam with the given value and key
+     * @param myClass The ConfigurableClass that this parameter belongs to
      * @param val Default value
      * @param setter Setter method for the value
-     * @param key YAML key to register with (e.g. "driveTrain/maxSpeed")
-     * @param simRealSpecific whether or not the value should be part of sim/real sub categories (true), or if it is universal (false)
-     * @param prettyName the name to display in the In Control
+     * @param key The yaml key for the value to be stored in (e.g. "kP")
+     * @param prettyName The formatted name to display in the Tuner
      */
-    public ConfigurableClassParam(T val, Consumer<T> setter, String key, boolean simRealSpecific, String prettyName) {
+    public ConfigurableClassParam(ConfigurableClass myClass, T val, Consumer<T> setter, String key, String prettyName) {
         value = val;
         this.setter = setter;
-        this.key = key;
-        this.simRealSpecific = simRealSpecific;
+        this.key = myClass.getKey() + "/" + key;
+        this.simRealSpecific = myClass.isSimRealSpecific();
         this.prettyName = prettyName;
+    }
+
+    /**
+     * Creates a new ConfigurableClassParam with the given value and key
+     * @param myClass The ConfigurableClass that this parameter belongs to
+     * @param val Default value
+     * @param setter Setter method for the value
+     * @param key The yaml key for the value to be stored in (e.g. "kP")
+     */
+    public ConfigurableClassParam(ConfigurableClass myClass, T val, Consumer<T> setter, String key) {
+        value = val;
+        this.setter = setter;
+        this.key = myClass.getKey() + "/" + key;
+        this.simRealSpecific = myClass.isSimRealSpecific();
+        String[] split = key.split("/");
+        this.prettyName = split[split.length - 1];
     }
 }
 

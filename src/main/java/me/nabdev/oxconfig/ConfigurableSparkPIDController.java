@@ -12,20 +12,21 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> iZoneParam;
     private ConfigurableClassParam<Double> FFParam;
     private ConfigurableClassParam<Double> minParam;
-    private ConfigurableClassParam<Double> maxParam; 
+    private ConfigurableClassParam<Double> maxParam;
 
-    ArrayList<ConfigurableClassParam<?>> params = new ArrayList<ConfigurableClassParam<?>>();
+    private ArrayList<ConfigurableClassParam<?>> params;
 
     private SparkMaxPIDController myController;
 
     private String key;
     private String prettyName;
+    private boolean isSimRealSpecific;
 
     /**
-     * Sets up a spark max PID controller to be auto-configured.
+     * Sets up a spark max PID controller to be autoconfigured.
      * @param controller The spark max controller to be configured
      * @param key The yaml key for the controller to be stored in
-     * @param simRealSpecific whether or not the value should be part of sim/real sub categories (true), or if it is universal (false)
+     * @param simRealSpecific whether the value should be part of sim/real sub categories (true), or if it is universal (false)
      */
     public ConfigurableSparkPIDController(SparkMaxPIDController controller, String key, boolean simRealSpecific) {
         String[] keys = key.split("/");
@@ -33,7 +34,7 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
     }
 
     /**
-     * Sets up a spark max PID controller to be auto-configured. Default to sim/real specific
+     * Sets up a spark max PID controller to be autoconfigured. Default to sim/real specific
      * @param controller The spark max controller to be configured
      * @param key The yaml key for the controller to be stored in
      */
@@ -43,18 +44,18 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
     }
 
     /**
-     * Sets up a spark max PID controller to be auto-configured.
+     * Sets up a spark max PID controller to be autoconfigured.
      * @param controller The spark max controller to be configured
      * @param key The yaml key for the controller to be stored in
      * @param prettyName The display name of this controller
-     * @param simRealSpecific whether or not the value should be part of sim/real sub categories (true), or if it is universal (false)
+     * @param simRealSpecific whether the value should be part of sim/real sub categories (true), or if it is universal (false)
      */
     public ConfigurableSparkPIDController(SparkMaxPIDController controller, String key, String prettyName, boolean simRealSpecific) {
         initialize(controller, key, prettyName, simRealSpecific);
     }
 
     /**
-     * Sets up a spark max PID controller to be auto-configured. Defaults to sim/real specific
+     * Sets up a spark max PID controller to be autoconfigured. Defaults to sim/real specific
      * @param controller The spark max controller to be configured
      * @param key The yaml key for the controller to be stored in
      * @param prettyName The display name of this controller
@@ -66,14 +67,15 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
     private void initialize(SparkMaxPIDController controller, String key, String prettyName, boolean simReal){
         this.key = key;
         this.prettyName = prettyName;
+        this.isSimRealSpecific = simReal;
         myController = controller;
-        kpParam = new ConfigurableClassParam<Double>(0.0, controller::setP, key + "/p", simReal, "P");
-        kiParam = new ConfigurableClassParam<Double>(0.0, controller::setI, key + "/i", simReal, "I");
-        kdParam = new ConfigurableClassParam<Double>(0.0, controller::setD, key + "/d", simReal, "D");
-        iZoneParam = new ConfigurableClassParam<Double>(0.0, controller::setIZone, key + "/izone", simReal, "I-Zone");
-        FFParam = new ConfigurableClassParam<Double>(0.0, controller::setFF, key + "/ff", simReal, "FF");
-        minParam = new ConfigurableClassParam<Double>(0.0, this::setMin, key + "/min", simReal, "Min");
-        maxParam = new ConfigurableClassParam<Double>(0.0, this::setMax, key + "/max", simReal, "Max");
+        kpParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setP, "P");
+        kiParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setI, "I");
+        kdParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setD, "D");
+        iZoneParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setIZone, "IZone");
+        FFParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setFF, "FF");
+        minParam = new ConfigurableClassParam<Double>(this, 0.0, this::setMin, "Min");
+        maxParam = new ConfigurableClassParam<Double>(this, 0.0, this::setMax, "Max");
         Collections.addAll(params, kpParam, kiParam, kdParam, iZoneParam, FFParam, minParam, maxParam);
         OxConfig.registerConfigurableClass(this);
     }
@@ -91,6 +93,11 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
     @Override
     public String getPrettyName(){
         return prettyName;
+    }
+
+    @Override
+    public boolean isSimRealSpecific() {
+        return isSimRealSpecific;
     }
 
     public void setMin(double min){

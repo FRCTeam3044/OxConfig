@@ -14,7 +14,7 @@ public class ConfigurableParameter<T> implements Configurable<T> {
      * Creates a new ConfigurableParameter with the given value and key, and registers it with the OxConfig
      * @param val Default value
      * @param key YAML key to register with (e.g. "driveTrain/maxSpeed")
-     * @param simRealSpecific whether or not the value should be part of sim/real sub categories (true), or if it is universal (false)
+     * @param simRealSpecific whether the value should be part of sim/real sub categories (true), or if it is universal (false)
      */
     public ConfigurableParameter(T val, String key, boolean simRealSpecific) {
         value = val;

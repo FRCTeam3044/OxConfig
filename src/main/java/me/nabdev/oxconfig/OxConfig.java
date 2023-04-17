@@ -20,11 +20,10 @@ public class OxConfig {
 
     private static boolean hasModified = false;
     private static boolean hasReadFromFile = false;
-
-    private static boolean pendingASUpdate = false;
+    private static boolean pendingNTUpdate = false;
 
     /**
-     * Updates all the configurable parameters
+     * Updates all the configurable parameters/configurable classes (NOT FROM FILE, use reloadFromDisk() instead)
      */
     public static void reload(){
         if(!hasReadFromFile){
@@ -39,7 +38,7 @@ public class OxConfig {
     }
 
     /**
-     * Reloads all values from the files and updates the configurable parameters
+     * Reloads all values from the config file and updates the configurable parameters/configurable classes
      */
     public static void reloadFromDisk(){
         reloadFromFile();
@@ -93,7 +92,7 @@ public class OxConfig {
     private static void reloadFromFile(){
         try {
             config = Yaml.createYamlInput(new File(Filesystem.getDeployDirectory() + "/config.yml")).readYamlMapping();
-            pendingASUpdate = true;
+            pendingNTUpdate = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -137,7 +136,7 @@ public class OxConfig {
             return source;
         }
         hasModified = true;
-        pendingASUpdate = true;
+        pendingNTUpdate = true;
 
         YamlMappingBuilder newMap = Yaml.createYamlMappingBuilder();
         newMap = newMap.add(keys[keys.length - 1], Yaml.createYamlScalarBuilder()
@@ -165,7 +164,7 @@ public class OxConfig {
     private static YamlMapping modifyValue(String key, String newValue, final YamlMapping source) {
         String[] keys = key.split("/");
         hasModified = true;
-        pendingASUpdate = true;
+        pendingNTUpdate = true;
 
         YamlMappingBuilder newMap = Yaml.createYamlMappingBuilder();
         newMap = newMap.add(keys[keys.length - 1], Yaml.createYamlScalarBuilder()
@@ -208,7 +207,7 @@ public class OxConfig {
 
 
     /**
-     * Reading/writing the config over networktables, used for the tuning and config GUI's built in to our modified advantage scope.
+     * Reading/writing the config over NetworkTables, used for the tuning and config GUI's built in to our modified advantage scope.
      * OxConfig can be run without this if you aren't interested in these features. Designed to be run in periodic.
      */
     public static void runNTInterface(){
@@ -218,8 +217,8 @@ public class OxConfig {
             config = modifyValue(keySet[0], keySet[1], config);
             reload();
         }
-        if(pendingASUpdate){
-            pendingASUpdate = false;
+        if(pendingNTUpdate){
+            pendingNTUpdate = false;
             NT4Interface.updateConfig(config.toString());
             NT4Interface.updateClasses(configurableClasses);
         }

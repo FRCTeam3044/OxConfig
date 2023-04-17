@@ -6,4 +6,5 @@ public interface ConfigurableClass {
     public ArrayList<ConfigurableClassParam<?>> getParameters();
     public String getKey();
     public String getPrettyName();
+    public boolean isSimRealSpecific();
 }

@@ -10,16 +10,17 @@ public class ConfigurablePIDController extends PIDController implements Configur
     private ConfigurableClassParam<Double> kdParam;
     private String key;
     private String prettyName;
+    private boolean isSimRealSpecific;
 
     /**
-     * Allocates a PIDController with the given constants for kp, ki, and kd and a default period of
+     * Allocates a ConfigurablePIDController and registers it to OxConfig with the given constants for kp, ki, and kd and a default period of
      * 0.02 seconds.
      *
      * @param kp The proportional coefficient.
      * @param ki The integral coefficient.
      * @param kd The derivative coefficient.
      * @param key The yaml key for the controller to be stored in
-     * @param simRealSpecific whether or not the value should be part of sim/real sub categories (true), or if it is universal (false)
+     * @param simRealSpecific whether the value should be part of sim/real sub categories (true), or if it is universal (false)
      */
     public ConfigurablePIDController(double kp, double ki, double kd, String key, boolean simRealSpecific) {
         super(kp, ki, kd);
@@ -28,7 +29,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
     }
 
     /**
-     * Allocates a PIDController with the given constants for kp, ki, and kd and a default period of
+     * Allocates a ConfigurablePIDController and registers it to OxConfig with the given constants for kp, ki, and kd and a default period of
      * 0.02 seconds. DEFAULTS TO SIM/REAL SPECIFIC
      *
      * @param kp The proportional coefficient.
@@ -43,7 +44,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
     }
 
     /**
-     * Allocates a PIDController with the given constants for kp, ki, and kd and a default period of
+     * Allocates a ConfigurablePIDController and registers it to OxConfig with the given constants for kp, ki, and kd and a default period of
      * 0.02 seconds.
      *
      * @param kp The proportional coefficient.
@@ -51,7 +52,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
      * @param kd The derivative coefficient.
      * @param key The yaml key for the controller to be stored in
      * @param prettyName The display name of this controller
-     * @param simRealSpecific whether or not the value should be part of sim/real sub categories (true), or if it is universal (false)
+     * @param simRealSpecific whether the value should be part of sim/real sub categories (true), or if it is universal (false)
      */
     public ConfigurablePIDController(double kp, double ki, double kd, String key, String prettyName, boolean simRealSpecific) {
         super(kp, ki, kd);
@@ -59,7 +60,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
     }
 
     /**
-     * Allocates a PIDController with the given constants for kp, ki, and kd and a default period of
+     * Allocates a ConfigurablePIDController and registers it to OxConfig with the given constants for kp, ki, and kd and a default period of
      * 0.02 seconds. DEFAULTS TO SIM/REAL SPECIFIC
      *
      * @param kp The proportional coefficient.
@@ -76,9 +77,10 @@ public class ConfigurablePIDController extends PIDController implements Configur
     private void initialize(double kp, double ki, double kd, String key, String prettyName, boolean simReal){
         this.key = key;
         this.prettyName = prettyName;
-        kpParam = new ConfigurableClassParam<Double>(kp, this::setP, key + "/p", simReal, "P");
-        kiParam = new ConfigurableClassParam<Double>(ki, this::setI, key + "/i", simReal, "I");
-        kdParam = new ConfigurableClassParam<Double>(kd, this::setD, key + "/d", simReal, "D");
+        isSimRealSpecific = simReal;
+        kpParam = new ConfigurableClassParam<Double>(this, kp, this::setP, "P");
+        kiParam = new ConfigurableClassParam<Double>(this, ki, this::setI, "I");
+        kdParam = new ConfigurableClassParam<Double>(this, kd, this::setD, "D");
         OxConfig.registerConfigurableClass(this);
     }
 
@@ -99,6 +101,11 @@ public class ConfigurablePIDController extends PIDController implements Configur
     @Override
     public String getPrettyName(){
         return prettyName;
+    }
+
+    @Override
+    public boolean isSimRealSpecific() {
+        return isSimRealSpecific;
     }
 
 }
