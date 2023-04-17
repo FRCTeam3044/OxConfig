@@ -1,7 +1,7 @@
-# OxConfig
+# 
 OxConfig is a modular and flexible utility for automatically setting up a YAML based config file and tuning over NetworkTables.
 
-_Developed by [nab138](https://nabdev.me), this version is intended for use by FIRST teams using WPILib (not endorsed by WPI). A standard java version is also available (will be coming soon)._
+_Developed by [nab138](https://github.com/nab138), this version is intended for use by FIRST teams using WPILib (not endorsed by WPI). A standard java version is also available (will be coming soon)._
 
 **This module is in very early beta and breaking changes will be made frequently. It is not considered stable yet so user beware.**
 
