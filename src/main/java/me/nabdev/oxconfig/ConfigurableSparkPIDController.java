@@ -14,7 +14,7 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> minParam;
     private ConfigurableClassParam<Double> maxParam;
 
-    private ArrayList<ConfigurableClassParam<?>> params;
+    private ArrayList<ConfigurableClassParam<?>> params = new ArrayList();
 
     private SparkMaxPIDController myController;
 
