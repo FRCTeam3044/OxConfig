@@ -1,4 +1,4 @@
-package me.nabdev.autoconfig;
+package me.nabdev.oxconfig;
 
 public interface Configurable<T> {
     public T get();

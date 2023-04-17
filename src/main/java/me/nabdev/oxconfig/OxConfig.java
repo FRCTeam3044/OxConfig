@@ -1,4 +1,4 @@
-package me.nabdev.autoconfig;
+package me.nabdev.oxconfig;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,7 +13,7 @@ import com.amihaiemil.eoyaml.extensions.MergedYamlMapping;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 
-public class AutoConfig {
+public class OxConfig {
     private static YamlMapping config;
     private static HashMap<String, Configurable<?>> configValues = new HashMap<String, Configurable<?>>();
     private static HashMap<String, ConfigurableClass> configurableClasses = new HashMap<String, ConfigurableClass>();
@@ -117,7 +117,7 @@ public class AutoConfig {
         } else if(obj.get() instanceof String){
             ((Configurable<String>)obj).set(String.valueOf(map.string(key)));
         } else {
-            System.out.println("Unknown AutoConfig type: " + obj.get().getClass().getName());
+            System.out.println("Unknown OxConfig type: " + obj.get().getClass().getName());
         }
     }
 
@@ -209,7 +209,7 @@ public class AutoConfig {
 
     /**
      * Reading/writing the config over networktables, used for the tuning and config GUI's built in to our modified advantage scope.
-     * AutoConfig can be run without this if you aren't interested in these features. Designed to be run in periodic.
+     * OxConfig can be run without this if you aren't interested in these features. Designed to be run in periodic.
      */
     public static void runNTInterface(){
         String keySetRaw = NT4Interface.getSetKeys();

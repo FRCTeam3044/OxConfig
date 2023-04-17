@@ -1,4 +1,4 @@
-package me.nabdev.autoconfig;
+package me.nabdev.oxconfig;
 
 import java.util.ArrayList;
 

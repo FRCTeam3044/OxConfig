@@ -1,4 +1,4 @@
-package me.nabdev.autoconfig;
+package me.nabdev.oxconfig;
 
 import java.util.ArrayList;
 
@@ -79,7 +79,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
         kpParam = new ConfigurableClassParam<Double>(kp, this::setP, key + "/p", simReal, "P");
         kiParam = new ConfigurableClassParam<Double>(ki, this::setI, key + "/i", simReal, "I");
         kdParam = new ConfigurableClassParam<Double>(kd, this::setD, key + "/d", simReal, "D");
-        AutoConfig.registerConfigurableClass(this);
+        OxConfig.registerConfigurableClass(this);
     }
 
     @Override

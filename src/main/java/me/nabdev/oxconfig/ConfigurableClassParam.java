@@ -1,4 +1,4 @@
-package me.nabdev.autoconfig;
+package me.nabdev.oxconfig;
 
 import java.util.function.Consumer;
 
@@ -33,7 +33,7 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
     }
 
     /**
-     * Creates a new ConfigurableParameter with the given value and key, and registers it with the AutoConfig
+     * Creates a new ConfigurableParameter with the given value and key, and registers it with the OxConfig
      * @param val Default value
      * @param setter Setter method for the value
      * @param key YAML key to register with (e.g. "driveTrain/maxSpeed")

@@ -1,4 +1,4 @@
-package me.nabdev.autoconfig;
+package me.nabdev.oxconfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,7 +75,7 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
         minParam = new ConfigurableClassParam<Double>(0.0, this::setMin, key + "/min", simReal, "Min");
         maxParam = new ConfigurableClassParam<Double>(0.0, this::setMax, key + "/max", simReal, "Max");
         Collections.addAll(params, kpParam, kiParam, kdParam, iZoneParam, FFParam, minParam, maxParam);
-        AutoConfig.registerConfigurableClass(this);
+        OxConfig.registerConfigurableClass(this);
     }
 
     @Override

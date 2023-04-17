@@ -1,4 +1,4 @@
-package me.nabdev.autoconfig;
+package me.nabdev.oxconfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ public class NT4Interface {
     private static NetworkTable table;
 
     static {
-        table = NetworkTableInstance.getDefault().getTable("AutoConfig");
+        table = NetworkTableInstance.getDefault().getTable("OxConfig");
         table.getEntry("KeySetter").setString("");
     }
 
@@ -33,7 +33,7 @@ public class NT4Interface {
             for(ConfigurableClassParam<?> param : parameters){
                 JSONArray paramArr = new JSONArray();
                 paramArr.put(param.getPrettyName());
-                paramArr.put((param.isSimRealSpecific() ? AutoConfig.realOrSim() : "") + param.getKey());
+                paramArr.put((param.isSimRealSpecific() ? OxConfig.realOrSim() : "") + param.getKey());
                 paramArr.put(param.get().toString());
                 classArr.put(paramArr);
             }
