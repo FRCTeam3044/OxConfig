@@ -1,6 +1,7 @@
 package me.nabdev.oxconfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import edu.wpi.first.math.controller.PIDController;
 
@@ -11,6 +12,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
     private String key;
     private String prettyName;
     private boolean isSimRealSpecific;
+    private ArrayList<ConfigurableClassParam<?>> params = new ArrayList<ConfigurableClassParam<?>>();
 
     /**
      * Allocates a ConfigurablePIDController and registers it to OxConfig with the given constants for kp, ki, and kd and a default period of
@@ -81,16 +83,13 @@ public class ConfigurablePIDController extends PIDController implements Configur
         kpParam = new ConfigurableClassParam<Double>(this, kp, this::setP, "P");
         kiParam = new ConfigurableClassParam<Double>(this, ki, this::setI, "I");
         kdParam = new ConfigurableClassParam<Double>(this, kd, this::setD, "D");
+        Collections.addAll(params, kpParam, kiParam, kdParam);
         OxConfig.registerConfigurableClass(this);
     }
 
     @Override
     public ArrayList<ConfigurableClassParam<?>> getParameters() {
-        ArrayList<ConfigurableClassParam<?>> list = new ArrayList<ConfigurableClassParam<?>>();
-        list.add(kpParam);
-        list.add(kiParam);
-        list.add(kdParam);
-        return list;
+        return params;
     }
 
     @Override
