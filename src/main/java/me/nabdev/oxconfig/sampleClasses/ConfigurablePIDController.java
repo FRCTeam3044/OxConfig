@@ -1,9 +1,12 @@
-package me.nabdev.oxconfig;
+package me.nabdev.oxconfig.sampleClasses;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 import edu.wpi.first.math.controller.PIDController;
+import me.nabdev.oxconfig.ConfigurableClass;
+import me.nabdev.oxconfig.ConfigurableClassParam;
+import me.nabdev.oxconfig.OxConfig;
 
 public class ConfigurablePIDController extends PIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;

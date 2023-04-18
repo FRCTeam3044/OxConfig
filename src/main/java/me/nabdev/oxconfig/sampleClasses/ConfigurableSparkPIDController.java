@@ -1,9 +1,13 @@
-package me.nabdev.oxconfig;
+package me.nabdev.oxconfig.sampleClasses;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 import com.revrobotics.SparkMaxPIDController;
+
+import me.nabdev.oxconfig.ConfigurableClass;
+import me.nabdev.oxconfig.ConfigurableClassParam;
+import me.nabdev.oxconfig.OxConfig;
 
 public class ConfigurableSparkPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
@@ -14,7 +18,7 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> minParam;
     private ConfigurableClassParam<Double> maxParam;
 
-    private ArrayList<ConfigurableClassParam<?>> params = new ArrayList();
+    private ArrayList<ConfigurableClassParam<?>> params = new ArrayList<ConfigurableClassParam<?>>();
 
     private SparkMaxPIDController myController;
 
