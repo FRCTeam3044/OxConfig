@@ -24,27 +24,15 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
 
     private String key;
     private String prettyName;
-    private boolean isSimRealSpecific;
 
     /**
      * Sets up a spark max PID controller to be autoconfigured.
-     * @param controller The spark max controller to be configured
-     * @param key The yaml key for the controller to be stored in
-     * @param simRealSpecific whether the value should be part of sim/real sub categories (true), or if it is universal (false)
-     */
-    public ConfigurableSparkPIDController(SparkMaxPIDController controller, String key, boolean simRealSpecific) {
-        String[] keys = key.split("/");
-        initialize(controller, key, keys[keys.length - 1], simRealSpecific);
-    }
-
-    /**
-     * Sets up a spark max PID controller to be autoconfigured. Default to sim/real specific
      * @param controller The spark max controller to be configured
      * @param key The yaml key for the controller to be stored in
      */
     public ConfigurableSparkPIDController(SparkMaxPIDController controller, String key) {
         String[] keys = key.split("/");
-        initialize(controller, key, keys[keys.length - 1], true);
+        initialize(controller, key, keys[keys.length - 1]);
     }
 
     /**
@@ -52,26 +40,14 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
      * @param controller The spark max controller to be configured
      * @param key The yaml key for the controller to be stored in
      * @param prettyName The display name of this controller
-     * @param simRealSpecific whether the value should be part of sim/real sub categories (true), or if it is universal (false)
-     */
-    public ConfigurableSparkPIDController(SparkMaxPIDController controller, String key, String prettyName, boolean simRealSpecific) {
-        initialize(controller, key, prettyName, simRealSpecific);
-    }
-
-    /**
-     * Sets up a spark max PID controller to be autoconfigured. Defaults to sim/real specific
-     * @param controller The spark max controller to be configured
-     * @param key The yaml key for the controller to be stored in
-     * @param prettyName The display name of this controller
      */
     public ConfigurableSparkPIDController(SparkMaxPIDController controller, String key, String prettyName) {
-        initialize(controller, key, prettyName, true);
+        initialize(controller, key, prettyName);
     }
 
-    private void initialize(SparkMaxPIDController controller, String key, String prettyName, boolean simReal){
+    private void initialize(SparkMaxPIDController controller, String key, String prettyName){
         this.key = key;
         this.prettyName = prettyName;
-        this.isSimRealSpecific = simReal;
         myController = controller;
         kpParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setP, "P");
         kiParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setI, "I");
@@ -97,11 +73,6 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
     @Override
     public String getPrettyName(){
         return prettyName;
-    }
-
-    @Override
-    public boolean isSimRealSpecific() {
-        return isSimRealSpecific;
     }
 
     public void setMin(double min){

@@ -7,9 +7,6 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
     private Consumer<T> setter;
     private String key;
     private String prettyName;
-    private ConfigurableClass myClass;
-
-    private boolean simRealSpecific;
 
     @Override
     public void set(T val) {
@@ -24,10 +21,6 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
 
     public String getKey() {
         return key;
-    }
-
-    public boolean isSimRealSpecific() {
-        return simRealSpecific;
     }
 
     public String getPrettyName(){
@@ -46,7 +39,6 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
         value = val;
         this.setter = setter;
         this.key = myClass.getKey() + "/" + key;
-        this.simRealSpecific = myClass.isSimRealSpecific();
         this.prettyName = prettyName;
     }
 
@@ -61,7 +53,6 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
         value = val;
         this.setter = setter;
         this.key = myClass.getKey() + "/" + key;
-        this.simRealSpecific = myClass.isSimRealSpecific();
         String[] split = key.split("/");
         this.prettyName = split[split.length - 1];
     }

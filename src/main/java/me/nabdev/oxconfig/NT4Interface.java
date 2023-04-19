@@ -33,7 +33,7 @@ public class NT4Interface {
             for(ConfigurableClassParam<?> param : parameters){
                 JSONArray paramArr = new JSONArray();
                 paramArr.put(param.getPrettyName());
-                paramArr.put((param.isSimRealSpecific() ? OxConfig.realOrSim() : "") + param.getKey());
+                paramArr.put(param.getKey());
                 paramArr.put(param.get().toString());
                 classArr.put(paramArr);
             }

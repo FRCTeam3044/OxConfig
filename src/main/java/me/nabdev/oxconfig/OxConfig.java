@@ -11,7 +11,6 @@ import com.amihaiemil.eoyaml.YamlPrinter;
 import com.amihaiemil.eoyaml.extensions.MergedYamlMapping;
 
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
 
 public class OxConfig {
     private static YamlMapping config;
@@ -71,8 +70,7 @@ public class OxConfig {
         parameters.forEach(parameter -> {
             registerParameter(
                 parameter.getKey(),
-                parameter,
-                parameter.isSimRealSpecific()
+                parameter
             );
         });
     }
@@ -82,10 +80,9 @@ public class OxConfig {
      * Sets up a config value to be automatically configured (Automatically handled by ConfigurableParameter)
      * @param key the yaml key the value will be found under in config.yml (in deploy folder)
      * @param parameter the parameter to update
-     * @param simRealSpecific whether the value should be part of sim/real sub categories (true), or if it is universal (false)
      */
-    public static void registerParameter(String key, Configurable<?> parameter, boolean simRealSpecific){
-        configValues.put((simRealSpecific ? realOrSim() : "") + key, parameter);
+    public static void registerParameter(String key, Configurable<?> parameter){
+        configValues.put(key, parameter);
         reload();
     }
 
@@ -100,9 +97,19 @@ public class OxConfig {
 
     private static void reloadConfig(){
         for(String key : configValues.keySet()){
-            config = ensureExists(key, configValues.get(key).get().toString(), config);
             String[] keys = key.split("/");
-            setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(key, config));                 
+            // TODO: Remove root from this key
+            if(keys[0] == "root"){
+                ensureExists(key, configValues.get(key).get().toString());
+                setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(key, config));       
+            } else {
+                for(String mode : ModeSelector.modes){
+                    ensureExists(mode + "/" + key, configValues.get(key).get().toString());
+                    setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(ModeSelector.getInstance().getMode() + "/" + key, config));       
+                }
+            }
+            // Need to add the current mode before key, only if not root
+                      
         }
     }
     @SuppressWarnings("unchecked")
@@ -128,12 +135,12 @@ public class OxConfig {
      * @param source The YamlMapping to check
      * @return A new YamlMapping that is garunteed to have the given key
      */
-    private static YamlMapping ensureExists(String key, String defaultVal,  final YamlMapping source) {
+    private static void ensureExists(String key, String defaultVal) {
         String[] keys = key.split("/");
         // If the key already exists, return the original mapping
-        YamlMapping nested = getNestedValue(key, source);
+        YamlMapping nested = getNestedValue(key, config);
         if(nested != null && nested.string(keys[keys.length - 1]) != null){
-            return source;
+            return;
         }
         hasModified = true;
         pendingNTUpdate = true;
@@ -145,13 +152,11 @@ public class OxConfig {
                 "Auto-generated"
             ));
             
-
         // Iterate backwards through the keys, creating the heirarchy from the bottom up
         for(int i = keys.length - 2; i >= 0; i--){
             newMap = Yaml.createYamlMappingBuilder().add(keys[i], newMap.build());
         }
-        YamlMapping test = new MergedYamlMapping(source, newMap.build(), true);
-        return test;
+        config = new MergedYamlMapping(config, newMap.build(), true);
     }
 
     /**
@@ -196,13 +201,6 @@ public class OxConfig {
             map = map.yamlMapping(keys[i]);
         }
         return map;
-    }
-
-    /**
-     * @return "real/" if the robot is real, "sim/" if the robot is simulated
-     */
-    public static String realOrSim() {
-        return RobotBase.isReal() ? "real/" : "sim/";
     }
 
 
