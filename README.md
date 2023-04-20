@@ -5,6 +5,8 @@ _Developed by [nab138](https://github.com/nab138), this version is intended for 
 
 **This module is in very early beta and breaking changes will be made frequently. It is not considered stable yet so user beware.**
 
+Check out our [roadmap](https://github.com/FRCTeam3044/OxConfig/blob/main/ROADMAP.md)!
+
 ## Installation
 You will need to add the Github packages maven repository to the repositories section in `build.gradle`
 ```gradle
