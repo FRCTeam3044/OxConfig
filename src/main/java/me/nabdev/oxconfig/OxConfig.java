@@ -3,6 +3,7 @@ package me.nabdev.oxconfig;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import com.amihaiemil.eoyaml.Yaml;
 import com.amihaiemil.eoyaml.YamlMapping;
@@ -20,7 +21,11 @@ public class OxConfig {
     private static boolean hasModified = false;
     private static boolean hasReadFromFile = false;
     private static boolean pendingNTUpdate = false;
+    private static ModeSelector modeSelector;
 
+    static {
+        modeSelector = ModeSelector.getInstance();
+    }
     /**
      * Updates all the configurable parameters/configurable classes (NOT FROM FILE, use reloadFromDisk() instead)
      */
@@ -98,18 +103,18 @@ public class OxConfig {
     private static void reloadConfig(){
         for(String key : configValues.keySet()){
             String[] keys = key.split("/");
-            // TODO: Remove root from this key
-            if(keys[0] == "root"){
-                ensureExists(key, configValues.get(key).get().toString());
-                setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(key, config));       
+            if(keys[0].equalsIgnoreCase("root")){
+                String newKey = String.join("/", Arrays.copyOfRange(keys, 1, keys.length));
+                ensureExists(newKey, configValues.get(key).get().toString());
+                setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(newKey, config));
             } else {
+                // Needed because creating ModeSelector calls on this function before the instance is assigned. 
+                if(modeSelector == null) continue;
                 for(String mode : ModeSelector.modes){
                     ensureExists(mode + "/" + key, configValues.get(key).get().toString());
-                    setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(ModeSelector.getInstance().getMode() + "/" + key, config));       
+                    setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(modeSelector.getMode() + "/" + key, config));       
                 }
-            }
-            // Need to add the current mode before key, only if not root
-                      
+            }         
         }
     }
     @SuppressWarnings("unchecked")
