@@ -8,8 +8,8 @@ import java.util.Arrays;
  */
 public class ModeSelector implements ConfigurableClass {
     private static ModeSelector instance;
-    private ConfigurableClassParam<String> modeParam = new ConfigurableClassParam<String>(this, "Testing", this::setMode, "mode");
-    private String currentMode;
+    private ConfigurableClassParam<String> modeParam = new ConfigurableClassParam<String>(this, "testing", this::setMode, "mode");
+    private String currentMode = "testing";
 
     // Register configurable class
     public ModeSelector(){
@@ -51,8 +51,10 @@ public class ModeSelector implements ConfigurableClass {
     // Should call reload in OxConfig
     public void setMode(String mode) {
         if(Arrays.asList(modes).contains(mode)){
-            currentMode = mode;
-            OxConfig.reload();
+            if(!currentMode.equals(mode)) {
+                currentMode = mode;
+                if (OxConfig.hasInitialized) OxConfig.reload();
+            }
         } else {
             System.out.println("Invalid mode: " + mode);
         }

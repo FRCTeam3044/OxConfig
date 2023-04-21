@@ -21,6 +21,7 @@ public class OxConfig {
     private static boolean hasModified = false;
     private static boolean hasReadFromFile = false;
     private static boolean pendingNTUpdate = false;
+    static boolean hasInitialized = false;
     private static ModeSelector modeSelector;
 
     static {
@@ -39,6 +40,7 @@ public class OxConfig {
             writeFiles();
             hasModified = false;
         }
+        hasInitialized = true;
     }
 
     /**
@@ -51,6 +53,7 @@ public class OxConfig {
             writeFiles();
             hasModified = false;
         }
+        hasInitialized = true;
     }
 
     /**
@@ -110,11 +113,11 @@ public class OxConfig {
             } else {
                 // Needed because creating ModeSelector calls on this function before the instance is assigned. 
                 if(modeSelector == null) continue;
-                for(String mode : ModeSelector.modes){
+                for(String mode : ModeSelector.modes) {
                     ensureExists(mode + "/" + key, configValues.get(key).get().toString());
-                    setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(modeSelector.getMode() + "/" + key, config));       
                 }
-            }         
+                setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(modeSelector.getMode() + "/" + key, config));
+            }
         }
     }
     @SuppressWarnings("unchecked")
