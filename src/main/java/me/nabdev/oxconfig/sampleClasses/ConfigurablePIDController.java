@@ -8,6 +8,10 @@ import me.nabdev.oxconfig.ConfigurableClass;
 import me.nabdev.oxconfig.ConfigurableClassParam;
 import me.nabdev.oxconfig.OxConfig;
 
+/**
+ * A WPILib PIDController that can be configured by OxConfig.
+ * This class is an example of implementing ConfigurableClass, but is safe for competition use.
+ */
 public class ConfigurablePIDController extends PIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
     private ConfigurableClassParam<Double> kiParam;

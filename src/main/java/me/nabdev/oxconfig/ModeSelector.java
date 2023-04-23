@@ -3,29 +3,33 @@ package me.nabdev.oxconfig;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/*
- * Using a configurable class for now. May change later once individual parameter editing is implemented
+
+// Using a configurable class for now. May change later once individual parameter editing is implemented
+
+/**
+ * Class for selecting the current mode of the robot.
  */
 public class ModeSelector implements ConfigurableClass {
     private static ModeSelector instance;
     private ConfigurableClassParam<String> modeParam = new ConfigurableClassParam<String>(this, "testing", this::setMode, "mode");
     private String currentMode = "testing";
 
-    // Register configurable class
-    public ModeSelector(){
+    ModeSelector(){
         OxConfig.registerConfigurableClass(this);
     }
 
-    public static ModeSelector getInstance() {
+    static ModeSelector getInstance() {
         if(instance == null) {
             instance = new ModeSelector();
         }
         return instance;
     }
 
-    // Represent current mode (presentation, competition, testing, etc.)
+    /**
+     * Valid modes for the robot
+     */
     public static String[] modes = {
-        "presentation", "competition", "testing"
+        "presentation", "competition", "testing", "simulation"
     };
 
     // Return an arraylist with the mode parameter
@@ -49,7 +53,7 @@ public class ModeSelector implements ConfigurableClass {
     }
 
     // Should call reload in OxConfig
-    public void setMode(String mode) {
+    void setMode(String mode) {
         if(Arrays.asList(modes).contains(mode)){
             if(!currentMode.equals(mode)) {
                 currentMode = mode;
@@ -60,7 +64,10 @@ public class ModeSelector implements ConfigurableClass {
         }
     }
 
-    // Should return a string representing the current mode
+    /**
+     * Gets the current mode of the robot
+     * @return The current mode of the robot
+     */
     public String getMode() {
         return currentMode;
     }

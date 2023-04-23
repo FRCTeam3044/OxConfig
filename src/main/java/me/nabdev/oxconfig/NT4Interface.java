@@ -9,6 +9,9 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+/**
+ * A helper class for interfacing with NetworkTables
+ */
 public class NT4Interface {
     private static NetworkTable table;
 
@@ -17,18 +20,23 @@ public class NT4Interface {
         table.getEntry("KeySetter").setString("");
     }
 
-    public static void updateConfig(String newConfig){
-        table.getEntry("Raw").setString(newConfig);
+    static String getSetKeys(){
+        NetworkTableEntry keyEntry = table.getEntry("KeySetter");
+        String key = keyEntry.getString("");
+        if(!key.isEmpty()){
+            keyEntry.setString("");
+        }
+        return key;
     }
 
-    public static void updateClasses(HashMap<String, ConfigurableClass> configurableClasses){
+    static void updateClasses(HashMap<String, ConfigurableClass> configurableClasses){
         JSONArray classes = new JSONArray();
         for(String configClassKey : configurableClasses.keySet()){
             JSONArray classArr = new JSONArray();
             ConfigurableClass configClass = configurableClasses.get(configClassKey);
             classArr.put(configClass.getPrettyName());
             classArr.put(configClassKey);
-            
+
             ArrayList<ConfigurableClassParam<?>> parameters = configClass.getParameters();
             for(ConfigurableClassParam<?> param : parameters){
                 JSONArray paramArr = new JSONArray();
@@ -42,12 +50,15 @@ public class NT4Interface {
         table.getEntry("Classes").setString(classes.toString());
     }
 
-    public static String getSetKeys(){
-        NetworkTableEntry keyEntry = table.getEntry("KeySetter");
-        String key = keyEntry.getString("");
-        if(!key.isEmpty()){
-            keyEntry.setString("");
+    static void updateParameters(HashMap<String, ConfigurableParameter<?>> parameters){
+        JSONArray params = new JSONArray();
+        for(String paramKey : parameters.keySet()){
+            JSONArray paramArr = new JSONArray();
+            ConfigurableParameter<?> param = parameters.get(paramKey);
+            paramArr.put(paramKey);
+            paramArr.put(param.get());
+            params.put(paramArr);
         }
-        return key;
+        table.getEntry("Params").setString(params.toString());
     }
 }

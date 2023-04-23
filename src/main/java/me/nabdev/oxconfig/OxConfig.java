@@ -13,10 +13,14 @@ import com.amihaiemil.eoyaml.extensions.MergedYamlMapping;
 
 import edu.wpi.first.wpilibj.Filesystem;
 
+/**
+ * A flexible, dynamic YAML based automatic configuration system for FRC robots
+ */
 public class OxConfig {
     private static YamlMapping config;
     private static HashMap<String, Configurable<?>> configValues = new HashMap<String, Configurable<?>>();
     private static HashMap<String, ConfigurableClass> configurableClasses = new HashMap<String, ConfigurableClass>();
+    private static HashMap<String, ConfigurableParameter<?>> configurableParameters = new HashMap<String, ConfigurableParameter<?>>();
 
     private static boolean hasModified = false;
     private static boolean hasReadFromFile = false;
@@ -71,12 +75,16 @@ public class OxConfig {
         }
     }
 
-    
+    /**
+     * Register a class to be automatically configured (should be called in configurable class constructor).
+     * This is automatically handled in ConfigurablePIDController and ConfigurableSparkPIDController.
+     * @param configurableClass the class to register
+     */
     public static void registerConfigurableClass(ConfigurableClass configurableClass){
         configurableClasses.put(configurableClass.getKey(), configurableClass);
         ArrayList<ConfigurableClassParam<?>> parameters = configurableClass.getParameters();
         parameters.forEach(parameter -> {
-            registerParameter(
+            registerClassParameter(
                 parameter.getKey(),
                 parameter
             );
@@ -89,7 +97,19 @@ public class OxConfig {
      * @param key the yaml key the value will be found under in config.yml (in deploy folder)
      * @param parameter the parameter to update
      */
-    public static void registerParameter(String key, Configurable<?> parameter){
+    public static void registerParameter(String key, ConfigurableParameter<?> parameter){
+        configValues.put(key, parameter);
+        configurableParameters.put(key, parameter);
+        reload();
+    }
+
+    /**
+     * Not for use by the user:
+     * Sets up a configurable class param  automatically configured (Automatically handled by ConfigurableClassParam)
+     * @param key the yaml key the value will be found under in config.yml (in deploy folder)
+     * @param parameter the parameter to update
+     */
+    public static void registerClassParameter(String key, ConfigurableClassParam<?> parameter){
         configValues.put(key, parameter);
         reload();
     }
@@ -140,7 +160,6 @@ public class OxConfig {
      * Will not overwrite any existing values, even in higher levels of the heirarchy
      * @param key The key to ensure exists, in the form of "key1/key2/key3"
      * @param defaultVal The default value to use if the key does not exist
-     * @param source The YamlMapping to check
      * @return A new YamlMapping that is garunteed to have the given key
      */
     private static void ensureExists(String key, String defaultVal) {
@@ -196,7 +215,7 @@ public class OxConfig {
     }
 
     /**
-     * Returns the mapping that is one step up in the hiearchy from the given key
+     * Returns the mapping that is one step up in the hierarchy from the given key
      * @param key The key to get, in the form of "key1/key2/key3"
      * @param source The YamlMapping to get the key from
      * @return The nested YamlMapping, null if not found
@@ -225,8 +244,8 @@ public class OxConfig {
         }
         if(pendingNTUpdate){
             pendingNTUpdate = false;
-            NT4Interface.updateConfig(config.toString());
             NT4Interface.updateClasses(configurableClasses);
+            NT4Interface.updateParameters(configurableParameters);
         }
     }
 }

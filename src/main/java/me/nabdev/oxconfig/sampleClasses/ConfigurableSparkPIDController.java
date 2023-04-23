@@ -9,6 +9,10 @@ import me.nabdev.oxconfig.ConfigurableClass;
 import me.nabdev.oxconfig.ConfigurableClassParam;
 import me.nabdev.oxconfig.OxConfig;
 
+/**
+ * A configurable spark max PID controller.
+ * This class is an example of how to use the ConfigurableClass interface, but is safe for competition use.
+ */
 public class ConfigurableSparkPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
     private ConfigurableClassParam<Double> kiParam;
@@ -75,10 +79,18 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
         return prettyName;
     }
 
+    /**
+     * Sets the minimum output of the controller
+     * @param min The minimum output
+     */
     public void setMin(double min){
         myController.setOutputRange(min, myController.getOutputMax());
     }
 
+    /**
+     * Sets the maximum output of the controller
+     * @param max The minimum output
+     */
     public void setMax(double max){
         myController.setOutputRange(myController.getOutputMin(), max);
     }
