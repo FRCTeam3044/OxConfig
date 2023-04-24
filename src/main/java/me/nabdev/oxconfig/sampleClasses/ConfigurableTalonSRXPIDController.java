@@ -9,6 +9,11 @@ import me.nabdev.oxconfig.ConfigurableClass;
 import me.nabdev.oxconfig.ConfigurableClassParam;
 import me.nabdev.oxconfig.OxConfig;
 
+/**
+ * A configurable Talon SRX PID controller.
+ * This class is an example of how to use the ConfigurableClass interface, but is safe for competition use.
+ */
+
 public class ConfigurableTalonSRXPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
     private ConfigurableClassParam<Double> kiParam;
