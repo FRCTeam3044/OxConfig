@@ -24,9 +24,9 @@ public class ConfigurableTalonFXPIDController implements ConfigurableClass {
     private String prettyName;
 
     /**
-     * Sets up a Talon SRX PID controller to be autoconfigured.
+     * Sets up a Talon FX PID controller to be autoconfigured.
      *
-     * @param controller The Talon SRX motor controller to be configured
+     * @param controller The Talon FX motor controller to be configured
      * @param key        The yaml key for the controller to be stored in
      */
     public ConfigurableTalonFXPIDController(TalonFX controller, String key) {
@@ -35,9 +35,9 @@ public class ConfigurableTalonFXPIDController implements ConfigurableClass {
     }
 
     /**
-     * Sets up a Talon SRX PID controller to be autoconfigured.
+     * Sets up a Talon FX PID controller to be autoconfigured.
      *
-     * @param controller The Talon SRX motor controller to be configured
+     * @param controller The Talon FX motor controller to be configured
      * @param key        The yaml key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
