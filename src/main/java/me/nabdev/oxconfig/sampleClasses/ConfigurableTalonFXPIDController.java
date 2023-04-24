@@ -16,7 +16,7 @@ public class ConfigurableTalonFXPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> iZoneParam;
     private ConfigurableClassParam<Double> FFParam;
 
-    private ArrayList<ConfigurableClassParam<?>> params = new ArrayList<ConfigurableClassParam<?>>();
+    private ArrayList<ConfigurableClassParam<?>> params = new ArrayList<>();
 
     private TalonFX motorController;
 
