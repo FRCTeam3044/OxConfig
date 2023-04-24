@@ -11,7 +11,7 @@ import java.util.Arrays;
  */
 public class ModeSelector implements ConfigurableClass {
     private static ModeSelector instance;
-    private ConfigurableClassParam<String> modeParam = new ConfigurableClassParam<String>(this, "testing", this::setMode, "mode");
+    private ConfigurableClassParam<String> modeParam = new ConfigurableClassParam<>(this, "testing", this::setMode, "mode");
     private String currentMode = "testing";
 
     ModeSelector(){
@@ -35,7 +35,7 @@ public class ModeSelector implements ConfigurableClass {
     // Return an arraylist with the mode parameter
     @Override
     public ArrayList<ConfigurableClassParam<?>> getParameters() {
-        ArrayList<ConfigurableClassParam<?>> params = new ArrayList<ConfigurableClassParam<?>>();
+        ArrayList<ConfigurableClassParam<?>> params = new ArrayList<>();
         params.add(modeParam);
         return params;
     }

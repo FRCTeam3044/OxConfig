@@ -18,9 +18,9 @@ import edu.wpi.first.wpilibj.Filesystem;
  */
 public class OxConfig {
     private static YamlMapping config;
-    private static HashMap<String, Configurable<?>> configValues = new HashMap<String, Configurable<?>>();
-    private static HashMap<String, ConfigurableClass> configurableClasses = new HashMap<String, ConfigurableClass>();
-    private static HashMap<String, ConfigurableParameter<?>> configurableParameters = new HashMap<String, ConfigurableParameter<?>>();
+    private static HashMap<String, Configurable<?>> configValues = new HashMap<>();
+    private static HashMap<String, ConfigurableClass> configurableClasses = new HashMap<>();
+    private static HashMap<String, ConfigurableParameter<?>> configurableParameters = new HashMap<>();
 
     private static boolean hasModified = false;
     private static boolean hasReadFromFile = false;
@@ -83,12 +83,10 @@ public class OxConfig {
     public static void registerConfigurableClass(ConfigurableClass configurableClass){
         configurableClasses.put(configurableClass.getKey(), configurableClass);
         ArrayList<ConfigurableClassParam<?>> parameters = configurableClass.getParameters();
-        parameters.forEach(parameter -> {
-            registerClassParameter(
-                parameter.getKey(),
-                parameter
-            );
-        });
+        parameters.forEach(parameter -> registerClassParameter(
+            parameter.getKey(),
+            parameter
+        ));
     }
 
     /**
@@ -143,9 +141,9 @@ public class OxConfig {
     @SuppressWarnings("unchecked")
     private static void setValue(Configurable<?> obj, String key, YamlMapping map){
         if(obj.get() instanceof Double){
-            ((Configurable<Double>)obj).set(Double.valueOf(map.doubleNumber(key)));
+            ((Configurable<Double>)obj).set(map.doubleNumber(key));
         } else if(obj.get() instanceof Integer){
-            ((Configurable<Integer>)obj).set(Integer.valueOf(map.integer(key)));
+            ((Configurable<Integer>)obj).set(map.integer(key));
         } else if(obj.get() instanceof Boolean){
             ((Configurable<Boolean>)obj).set(Boolean.valueOf(map.string(key)));
         } else if(obj.get() instanceof String){
@@ -157,10 +155,10 @@ public class OxConfig {
 
     /**
      * Ensures that the given key exists in the given YamlMapping, and if it does not, adds it with the given default value. 
-     * Will not overwrite any existing values, even in higher levels of the heirarchy
+     * Will not overwrite any existing values, even in higher levels of the hierarchy.
+     * If it does not exist a new YamlMapping that is guaranteed to have the given key will be created.
      * @param key The key to ensure exists, in the form of "key1/key2/key3"
      * @param defaultVal The default value to use if the key does not exist
-     * @return A new YamlMapping that is garunteed to have the given key
      */
     private static void ensureExists(String key, String defaultVal) {
         String[] keys = key.split("/");
@@ -179,7 +177,7 @@ public class OxConfig {
                 "Auto-generated"
             ));
             
-        // Iterate backwards through the keys, creating the heirarchy from the bottom up
+        // Iterate backwards through the keys, creating the hierarchy from the bottom up
         for(int i = keys.length - 2; i >= 0; i--){
             newMap = Yaml.createYamlMappingBuilder().add(keys[i], newMap.build());
         }
@@ -191,7 +189,7 @@ public class OxConfig {
      * @param key The key to change, in the form of "key1/key2/key3"
      * @param newValue The new value
      * @param source The YamlMapping to check
-     * @return A new YamlMapping that is garunteed to have the given key
+     * @return A new YamlMapping that is guaranteed to have the given key
      */
     private static YamlMapping modifyValue(String key, String newValue, final YamlMapping source) {
         String[] keys = key.split("/");
@@ -206,12 +204,11 @@ public class OxConfig {
             ));
             
 
-        // Iterate backwards through the keys, creating the heirarchy from the bottom up
+        // Iterate backwards through the keys, creating the hierarchy from the bottom up
         for(int i = keys.length - 2; i >= 0; i--){
             newMap = Yaml.createYamlMappingBuilder().add(keys[i], newMap.build());
         }
-        YamlMapping test = new MergedYamlMapping(source, newMap.build(), true);
-        return test;
+        return new MergedYamlMapping(source, newMap.build(), true);
     }
 
     /**

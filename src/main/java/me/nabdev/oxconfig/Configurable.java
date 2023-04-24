@@ -1,6 +1,6 @@
 package me.nabdev.oxconfig;
 
 interface Configurable<T> {
-    public T get();
-    public void set(T val);
+    T get();
+    void set(T val);
 }
