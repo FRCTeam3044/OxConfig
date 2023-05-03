@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import org.json.JSONArray;
 
+import com.amihaiemil.eoyaml.YamlMapping;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -18,6 +20,8 @@ public class NT4Interface {
     static {
         table = NetworkTableInstance.getDefault().getTable("OxConfig");
         table.getEntry("KeySetter").setString("");
+        table.getEntry("ModeSetter").setString("");
+        table.getEntry("Modes").setString(String.join(",", ModeSelector.modes));
     }
 
     static String getSetKeys(){
@@ -27,6 +31,16 @@ public class NT4Interface {
             keyEntry.setString("");
         }
         return key;
+    }
+
+
+    static String getSetModes(){
+        NetworkTableEntry modeEntry = table.getEntry("ModeSetter");
+        String mode = modeEntry.getString("");
+        if(!mode.isEmpty()){
+            modeEntry.setString("");
+        }
+        return mode;
     }
 
     static void updateClasses(HashMap<String, ConfigurableClass> configurableClasses){
@@ -53,12 +67,27 @@ public class NT4Interface {
     static void updateParameters(HashMap<String, ConfigurableParameter<?>> parameters){
         JSONArray params = new JSONArray();
         for(String paramKey : parameters.keySet()){
+            String[] keys = paramKey.split("/");
             JSONArray paramArr = new JSONArray();
             ConfigurableParameter<?> param = parameters.get(paramKey);
             paramArr.put(paramKey);
-            paramArr.put(param.get());
+            YamlMapping nested = OxConfig.getNestedValue(OxConfig.appendModeIfNotRoot(paramKey), OxConfig.config);
+            String finalKey = keys[keys.length - 1];
+            paramArr.put(nested.value(finalKey).comment().value());
+            if(keys[0].equals("root")){
+                paramArr.put(param.get());
+            } else {
+                for(String mode : ModeSelector.modes){
+                    YamlMapping curModeNested = OxConfig.getNestedValue(mode + "/" + paramKey, OxConfig.config);
+                    paramArr.put(curModeNested.string(keys[keys.length - 1]));
+                }
+            }
             params.put(paramArr);
         }
         table.getEntry("Params").setString(params.toString());
+    }
+
+    static void updateMode(){
+        table.getEntry("CurrentMode").setString(OxConfig.modeSelector.getMode());
     }
 }

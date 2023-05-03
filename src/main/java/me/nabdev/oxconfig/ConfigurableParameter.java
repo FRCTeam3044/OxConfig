@@ -1,12 +1,15 @@
 package me.nabdev.oxconfig;
 
+import java.util.function.Consumer;
+
 /**
  * A single parameter that can be configured by OxConfig.
- * If you need several parameters for one purpose, use the ConfigurableClass interface instead.
+ * If you need several instances of a class with several parameters, use ConfigurableClass instead.
  * @param <T> The type of the parameter
  */
 public class ConfigurableParameter<T> implements Configurable<T> {
     T value;
+    Consumer<T> setter;
 
     /**
      * Sets the value of the parameter and calls the setter method
@@ -15,6 +18,7 @@ public class ConfigurableParameter<T> implements Configurable<T> {
      */
     public void set(T val) {
         value = val;
+        setter.accept(val);
     }
 
     /**
@@ -32,6 +36,19 @@ public class ConfigurableParameter<T> implements Configurable<T> {
      */
     public ConfigurableParameter(T val, String key) {
         value = val;
+        setter = (T t) -> {};
+        OxConfig.registerParameter(key, this);
+    }
+
+    /**
+     * Creates a new ConfigurableParameter with the given value and key, and registers it with the OxConfig
+     * @param val Default value
+     * @param key YAML key to register with (e.g. "driveTrain/maxSpeed")
+     * @param callback Callback function on value change
+     */
+    public ConfigurableParameter(T val, String key, Consumer<T> callback) {
+        value = val;
+        setter = callback;
         OxConfig.registerParameter(key, this);
     }
 }

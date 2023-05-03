@@ -1,6 +1,4 @@
 package me.nabdev.oxconfig;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -9,21 +7,10 @@ import java.util.Arrays;
 /**
  * Class for selecting the current mode of the robot.
  */
-public class ModeSelector implements ConfigurableClass {
-    private static ModeSelector instance;
-    private ConfigurableClassParam<String> modeParam = new ConfigurableClassParam<String>(this, "testing", this::setMode, "mode");
+public class ModeSelector {
     private String currentMode = "testing";
-
-    ModeSelector(){
-        OxConfig.registerConfigurableClass(this);
-    }
-
-    static ModeSelector getInstance() {
-        if(instance == null) {
-            instance = new ModeSelector();
-        }
-        return instance;
-    }
+    @SuppressWarnings("unused")
+    private ConfigurableParameter<String> modeParam = new ConfigurableParameter<String>("testing", "root/mode", this::setMode);
 
     /**
      * Valid modes for the robot
@@ -32,32 +19,15 @@ public class ModeSelector implements ConfigurableClass {
         "presentation", "competition", "testing", "simulation"
     };
 
-    // Return an arraylist with the mode parameter
-    @Override
-    public ArrayList<ConfigurableClassParam<?>> getParameters() {
-        ArrayList<ConfigurableClassParam<?>> params = new ArrayList<ConfigurableClassParam<?>>();
-        params.add(modeParam);
-        return params;
-    }
-
-    // Return the key of the mode in the config
-    @Override
-    public String getKey() {
-        return "root/Mode";
-    }
-
-    // Returns the name of the Mode chooser for display in the Tuner
-    @Override
-    public String getPrettyName() {
-        return "Mode";
-    }
-
     // Should call reload in OxConfig
     void setMode(String mode) {
         if(Arrays.asList(modes).contains(mode)){
             if(!currentMode.equals(mode)) {
                 currentMode = mode;
-                if (OxConfig.hasInitialized) OxConfig.reload();
+                if (OxConfig.hasInitialized) {
+                    OxConfig.pendingNTUpdate = true;
+                    OxConfig.reload();
+                }
             }
         } else {
             System.out.println("Invalid mode: " + mode);

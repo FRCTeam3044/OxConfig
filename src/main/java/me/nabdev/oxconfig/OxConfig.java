@@ -17,20 +17,20 @@ import edu.wpi.first.wpilibj.Filesystem;
  * A flexible, dynamic YAML based automatic configuration system for FRC robots
  */
 public class OxConfig {
-    private static YamlMapping config;
+    static YamlMapping config;
     private static HashMap<String, Configurable<?>> configValues = new HashMap<String, Configurable<?>>();
     private static HashMap<String, ConfigurableClass> configurableClasses = new HashMap<String, ConfigurableClass>();
     private static HashMap<String, ConfigurableParameter<?>> configurableParameters = new HashMap<String, ConfigurableParameter<?>>();
 
     private static boolean hasModified = false;
     private static boolean hasReadFromFile = false;
-    private static boolean pendingNTUpdate = false;
+    static boolean pendingNTUpdate = false;
     static boolean hasInitialized = false;
-    private static ModeSelector modeSelector;
 
-    static {
-        modeSelector = ModeSelector.getInstance();
-    }
+    /**
+     * The current modeSelector, used to determine which config values to use
+     */
+    public static ModeSelector modeSelector = new ModeSelector();
     /**
      * Updates all the configurable parameters/configurable classes (NOT FROM FILE, use reloadFromDisk() instead)
      */
@@ -131,8 +131,6 @@ public class OxConfig {
                 ensureExists(newKey, configValues.get(key).get().toString());
                 setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(newKey, config));
             } else {
-                // Needed because creating ModeSelector calls on this function before the instance is assigned. 
-                if(modeSelector == null) continue;
                 for(String mode : ModeSelector.modes) {
                     ensureExists(mode + "/" + key, configValues.get(key).get().toString());
                 }
@@ -193,7 +191,7 @@ public class OxConfig {
      * @param source The YamlMapping to check
      * @return A new YamlMapping that is garunteed to have the given key
      */
-    private static YamlMapping modifyValue(String key, String newValue, final YamlMapping source) {
+    private static YamlMapping modifyValue(String key, String newValue, String comment, final YamlMapping source) {
         String[] keys = key.split("/");
         hasModified = true;
         pendingNTUpdate = true;
@@ -201,12 +199,10 @@ public class OxConfig {
         YamlMappingBuilder newMap = Yaml.createYamlMappingBuilder();
         newMap = newMap.add(keys[keys.length - 1], Yaml.createYamlScalarBuilder()
             .addLine(newValue)
-            .buildPlainScalar(
-                "Auto-generated (From In Control)"
-            ));
-            
+            .buildPlainScalar(comment)
+        );
 
-        // Iterate backwards through the keys, creating the heirarchy from the bottom up
+        // Iterate backwards through the keys, creating the hierarchy from the bottom up
         for(int i = keys.length - 2; i >= 0; i--){
             newMap = Yaml.createYamlMappingBuilder().add(keys[i], newMap.build());
         }
@@ -220,7 +216,7 @@ public class OxConfig {
      * @param source The YamlMapping to get the key from
      * @return The nested YamlMapping, null if not found
      */
-    private static YamlMapping getNestedValue(String key, YamlMapping source){
+    static YamlMapping getNestedValue(String key, YamlMapping source){
         String[] keys = key.split("/");
         YamlMapping map = source;
         for(int i = 0; i < keys.length - 1; i++){
@@ -236,16 +232,47 @@ public class OxConfig {
      * OxConfig can be run without this if you aren't interested in these features. Designed to be run in periodic.
      */
     public static void runNTInterface(){
-        String keySetRaw = NT4Interface.getSetKeys();
-        if(!keySetRaw.isEmpty()){
-            String[] keySet = keySetRaw.split(",");
-            config = modifyValue(keySet[0], keySet[1], config);
-            reload();
-        }
+        handleKeySetter();
         if(pendingNTUpdate){
             pendingNTUpdate = false;
             NT4Interface.updateClasses(configurableClasses);
             NT4Interface.updateParameters(configurableParameters);
+            NT4Interface.updateMode();
+        }
+    }
+
+    /**
+     * Read the KeySetter and ModeSetter from NT to set
+     */
+    private static void handleKeySetter(){
+        String keySetRaw = NT4Interface.getSetKeys();
+        if(!keySetRaw.isEmpty()){
+            String[] keySet = keySetRaw.split(",");
+            for(int i = 0; i < ModeSelector.modes.length; i++){
+                String mode = ModeSelector.modes[i];
+                String key = keySet[0];
+                if(!key.split(",")[0].equals("root")){
+                    key = mode + "/" + keySet[0];
+                }
+                config = modifyValue(key, keySet[2 + i], keySet[1], config);
+            }
+            reload();
+        }
+
+        String modeSet = NT4Interface.getSetModes();
+        if(Arrays.asList(ModeSelector.modes).contains(modeSet)){
+            config = modifyValue("mode", modeSet, "Set Mode", config);
+            reload();
+        }
+        
+    }
+
+    static String appendModeIfNotRoot(String key){
+        String[] keys = key.split("/");
+        if(keys[0].equalsIgnoreCase("root")){
+            return String.join("/", Arrays.copyOfRange(keys, 1, keys.length));
+        } else {
+            return modeSelector.getMode() + "/" + key;
         }
     }
 }
