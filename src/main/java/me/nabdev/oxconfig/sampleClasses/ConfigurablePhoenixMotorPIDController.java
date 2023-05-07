@@ -10,7 +10,7 @@ import me.nabdev.oxconfig.ConfigurableClassParam;
 import me.nabdev.oxconfig.OxConfig;
 
 /**
- * A configurable Talon SRX PID controller.
+ * A configurable Talon SRX or Victor SPX PID controller.
  * This class is an example of how to use the ConfigurableClass interface, but is safe for competition use.
  */
 
