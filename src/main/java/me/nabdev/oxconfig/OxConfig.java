@@ -18,9 +18,9 @@ import edu.wpi.first.wpilibj.Filesystem;
  */
 public class OxConfig {
     static YamlMapping config;
-    private static HashMap<String, Configurable<?>> configValues = new HashMap<>();
-    private static HashMap<String, ConfigurableClass> configurableClasses = new HashMap<>();
-    private static HashMap<String, ConfigurableParameter<?>> configurableParameters = new HashMap<>();
+    private static final HashMap<String, Configurable<?>> configValues = new HashMap<>();
+    private static final HashMap<String, ConfigurableClass> configurableClasses = new HashMap<>();
+    private static final HashMap<String, ConfigurableParameter<?>> configurableParameters = new HashMap<>();
 
     private static boolean hasModified = false;
     private static boolean hasReadFromFile = false;

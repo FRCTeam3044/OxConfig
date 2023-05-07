@@ -17,7 +17,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  * A helper class for interfacing with NetworkTables
  */
 public class NT4Interface {
-    private static NetworkTable table;
+    private static final NetworkTable table;
 
     static {
         table = NetworkTableInstance.getDefault().getTable("OxConfig");

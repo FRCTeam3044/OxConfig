@@ -18,7 +18,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
     private ConfigurableClassParam<Double> kdParam;
     private String key;
     private String prettyName;
-    private ArrayList<ConfigurableClassParam<?>> params = new ArrayList<>();
+    private final ArrayList<ConfigurableClassParam<?>> params = new ArrayList<>();
 
     /**
      * Allocates a ConfigurablePIDController and registers it to OxConfig with the given constants for kp, ki, and kd and a default period of

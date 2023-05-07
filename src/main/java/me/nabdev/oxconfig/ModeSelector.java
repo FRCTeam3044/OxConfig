@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class ModeSelector {
     private String currentMode = "testing";
     @SuppressWarnings("unused")
-    private ConfigurableParameter<String> modeParam = new ConfigurableParameter<String>("testing", "root/mode", this::setMode);
+    private final ConfigurableParameter<String> modeParam = new ConfigurableParameter<String>("testing", "root/mode", this::setMode);
 
     /**
      * Valid modes for the robot

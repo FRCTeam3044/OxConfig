@@ -8,9 +8,9 @@ import java.util.function.Consumer;
  */
 public class ConfigurableClassParam<T> implements Configurable<T> {
     private T value;
-    private Consumer<T> setter;
-    private String key;
-    private String prettyName;
+    private final Consumer<T> setter;
+    private final String key;
+    private final String prettyName;
 
     /**
      * Sets the value of the parameter and calls the setter method
