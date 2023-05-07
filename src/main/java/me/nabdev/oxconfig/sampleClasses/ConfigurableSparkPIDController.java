@@ -53,13 +53,13 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
         this.key = key;
         this.prettyName = prettyName;
         myController = controller;
-        kpParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setP, "P");
-        kiParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setI, "I");
-        kdParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setD, "D");
-        iZoneParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setIZone, "IZone");
-        FFParam = new ConfigurableClassParam<Double>(this, 0.0, controller::setFF, "FF");
-        minParam = new ConfigurableClassParam<Double>(this, 0.0, this::setMin, "Min");
-        maxParam = new ConfigurableClassParam<Double>(this, 0.0, this::setMax, "Max");
+        kpParam = new ConfigurableClassParam<>(this, 0.0, controller::setP, "P");
+        kiParam = new ConfigurableClassParam<>(this, 0.0, controller::setI, "I");
+        kdParam = new ConfigurableClassParam<>(this, 0.0, controller::setD, "D");
+        iZoneParam = new ConfigurableClassParam<>(this, 0.0, controller::setIZone, "IZone");
+        FFParam = new ConfigurableClassParam<>(this, 0.0, controller::setFF, "FF");
+        minParam = new ConfigurableClassParam<>(this, 0.0, this::setMin, "Min");
+        maxParam = new ConfigurableClassParam<>(this, 0.0, this::setMax, "Max");
         Collections.addAll(params, kpParam, kiParam, kdParam, iZoneParam, FFParam, minParam, maxParam);
         OxConfig.registerConfigurableClass(this);
     }

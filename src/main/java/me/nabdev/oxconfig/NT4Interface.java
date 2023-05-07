@@ -3,11 +3,11 @@ package me.nabdev.oxconfig;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 
 import org.json.JSONArray;
 
 import com.amihaiemil.eoyaml.YamlMapping;
-import com.amihaiemil.eoyaml.YamlPrinter;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -93,10 +93,9 @@ public class NT4Interface {
 
     static void updateRaw(YamlMapping raw){
         String string = raw.toString();
-        if(string == table.getEntry("Raw").getString("")) return;
-        else {
+        if(!Objects.equals(string, table.getEntry("Raw").getString(""))) {
             String timestamp = String.valueOf(new Date().getTime());
-            table.getEntry("Raw").setString(timestamp + "," + raw.toString());
+            table.getEntry("Raw").setString(timestamp + "," + raw);
         }
     }
 
