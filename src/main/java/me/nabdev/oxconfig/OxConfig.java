@@ -238,6 +238,7 @@ public class OxConfig {
             NT4Interface.updateClasses(configurableClasses);
             NT4Interface.updateParameters(configurableParameters);
             NT4Interface.updateMode();
+            NT4Interface.updateRaw(config);
         }
     }
 
