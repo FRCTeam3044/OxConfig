@@ -76,6 +76,8 @@ public class NT4Interface {
             YamlMapping nested = OxConfig.getNestedValue(OxConfig.appendModeIfNotRoot(paramKey), OxConfig.config);
             String finalKey = keys[keys.length - 1];
             paramArr.put(nested.value(finalKey).comment().value());
+            // Put the type of the parameter
+            paramArr.put(param.get().getClass().getSimpleName());
             if(keys[0].equals("root")){
                 paramArr.put(param.get());
             } else {

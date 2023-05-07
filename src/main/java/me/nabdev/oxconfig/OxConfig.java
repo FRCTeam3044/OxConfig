@@ -129,27 +129,37 @@ public class OxConfig {
             if(keys[0].equalsIgnoreCase("root")){
                 String newKey = String.join("/", Arrays.copyOfRange(keys, 1, keys.length));
                 ensureExists(newKey, configValues.get(key).get().toString());
-                setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(newKey, config));
+                setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(newKey, config), key);
             } else {
                 for(String mode : ModeSelector.modes) {
                     ensureExists(mode + "/" + key, configValues.get(key).get().toString());
                 }
-                setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(modeSelector.getMode() + "/" + key, config));
+                setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(modeSelector.getMode() + "/" + key, config), key);
             }
         }
     }
     @SuppressWarnings("unchecked")
-    private static void setValue(Configurable<?> obj, String key, YamlMapping map){
-        if(obj.get() instanceof Double){
-            ((Configurable<Double>)obj).set(Double.valueOf(map.doubleNumber(key)));
-        } else if(obj.get() instanceof Integer){
-            ((Configurable<Integer>)obj).set(Integer.valueOf(map.integer(key)));
-        } else if(obj.get() instanceof Boolean){
-            ((Configurable<Boolean>)obj).set(Boolean.valueOf(map.string(key)));
-        } else if(obj.get() instanceof String){
-            ((Configurable<String>)obj).set(String.valueOf(map.string(key)));
-        } else {
-            System.out.println("Unknown OxConfig type: " + obj.get().getClass().getName());
+    private static void setValue(Configurable<?> obj, String key, YamlMapping map, String fullKey){
+        try {
+            if(obj.get() instanceof Double){
+                ((Configurable<Double>)obj).set(Double.valueOf(map.doubleNumber(key)));
+            } else if(obj.get() instanceof Integer){
+                ((Configurable<Integer>)obj).set(Integer.valueOf(map.integer(key)));
+            } else if(obj.get() instanceof Boolean){
+                ((Configurable<Boolean>)obj).set(Boolean.valueOf(map.string(key)));
+            } else if(obj.get() instanceof String){
+                ((Configurable<String>)obj).set(String.valueOf(map.string(key)));
+            } else if(obj.get() instanceof Short){
+                ((Configurable<Short>)obj).set(Short.valueOf(map.string(key)));
+            } else if(obj.get() instanceof Long){
+                ((Configurable<Long>)obj).set(Long.valueOf(map.longNumber(key)));
+            } 
+            else {
+                System.out.println("Unknown OxConfig type: " + obj.get().getClass().getName());
+            }
+        } catch (Exception e) {
+            System.out.println("Error setting config value: " + fullKey);
+            e.printStackTrace();
         }
     }
 
