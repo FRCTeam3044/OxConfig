@@ -31,3 +31,4 @@ Check out the [wiki](https://github.com/FRCTeam3044/OxConfig/wiki) for help on g
 - [JSON-java](https://github.com/stleary/JSON-java)
 - [allwpilib](https://github.com/wpilibsuite/allwpilib)
 - [REV Lib](https://docs.revrobotics.com/sparkmax/software-resources/spark-max-api-information)
+- [CTRE Lib v5](https://v5.docs.ctr-electronics.com/en/stable/)
