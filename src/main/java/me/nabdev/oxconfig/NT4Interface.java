@@ -22,12 +22,22 @@ public class NT4Interface {
     static {
         table = NetworkTableInstance.getDefault().getTable("OxConfig");
         table.getEntry("KeySetter").setString("");
+        table.getEntry("SingleKeySetter").setString("");
         table.getEntry("ModeSetter").setString("");
         table.getEntry("Modes").setString(String.join(",", ModeSelector.modes));
     }
 
     static String getSetKeys(){
         NetworkTableEntry keyEntry = table.getEntry("KeySetter");
+        String key = keyEntry.getString("");
+        if(!key.isEmpty()){
+            keyEntry.setString("");
+        }
+        return key;
+    }
+
+    static String getSetSingleKeys(){
+        NetworkTableEntry keyEntry = table.getEntry("SingleKeySetter");
         String key = keyEntry.getString("");
         if(!key.isEmpty()){
             keyEntry.setString("");
@@ -57,8 +67,14 @@ public class NT4Interface {
             for(ConfigurableClassParam<?> param : parameters){
                 JSONArray paramArr = new JSONArray();
                 paramArr.put(param.getPrettyName());
-                paramArr.put(param.getKey());
-                paramArr.put(param.get().toString());
+                String key = param.getKey();
+                paramArr.put(key);
+                paramArr.put(param.get().getClass().getSimpleName());
+                String[] keys = key.split("/");
+                for(String mode : ModeSelector.modes){
+                    YamlMapping curModeNested = OxConfig.getNestedValue(mode + "/" + key, OxConfig.config);
+                    paramArr.put(curModeNested.string(keys[keys.length - 1]));
+                }
                 classArr.put(paramArr);
             }
             classes.put(classArr);

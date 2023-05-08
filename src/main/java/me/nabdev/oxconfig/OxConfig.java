@@ -274,6 +274,19 @@ public class OxConfig {
             config = modifyValue("mode", modeSet, "Set Mode", config);
             reload();
         }
+
+        String singleKeySet = NT4Interface.getSetSingleKeys();
+        if(!singleKeySet.isEmpty()){
+            String[] keySet = singleKeySet.split(",");
+            String key = keySet[0];
+            String mode = keySet[1];
+            if(!Arrays.asList(ModeSelector.modes).contains(mode)){
+                System.out.println("Invalid mode: " + mode);
+                return;
+            }
+            config = modifyValue(mode + "/" + key, keySet[2], "Modified by Tuner", config);
+            reload();
+        }
         
     }
 
