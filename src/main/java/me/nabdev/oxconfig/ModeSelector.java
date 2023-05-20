@@ -1,6 +1,8 @@
 package me.nabdev.oxconfig;
 import java.util.Arrays;
 
+import edu.wpi.first.wpilibj.RobotBase;
+
 
 // Using a configurable class for now. May change later once individual parameter editing is implemented
 
@@ -9,8 +11,8 @@ import java.util.Arrays;
  */
 public class ModeSelector {
     private String currentMode = "testing";
-    @SuppressWarnings("unused")
-    private final ConfigurableParameter<String> modeParam = new ConfigurableParameter<String>("testing", "root/mode", this::setMode);
+    private boolean hasInitialized = false;
+    final ConfigurableParameter<String> modeParam = new ConfigurableParameter<String>("testing", "root/mode", this::setMode);
 
     /**
      * Valid modes for the robot
@@ -21,6 +23,13 @@ public class ModeSelector {
 
     // Should call reload in OxConfig
     void setMode(String mode) {
+        if(!hasInitialized) {
+            hasInitialized = true;
+            if(RobotBase.isSimulation()) {
+                modeParam.set("simulation");
+                return;
+            }
+        }
         if(Arrays.asList(modes).contains(mode)){
             if(!currentMode.equals(mode)) {
                 currentMode = mode;

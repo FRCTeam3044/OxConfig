@@ -18,11 +18,16 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  */
 public class NT4Interface {
     private static final NetworkTable table;
+    static boolean hasInitialized = false;
 
     static {
         table = NetworkTableInstance.getDefault().getTable("OxConfig");
+    }
+
+    static void initalize() {
+        hasInitialized = true;
         table.getEntry("KeySetter").setString("");
-        table.getEntry("SingleKeySetter").setString("");
+        table.getEntry("ClassSetter").setString("");
         table.getEntry("ModeSetter").setString("");
         table.getEntry("Modes").setString(String.join(",", ModeSelector.modes));
     }
@@ -36,8 +41,8 @@ public class NT4Interface {
         return key;
     }
 
-    static String getSetSingleKeys(){
-        NetworkTableEntry keyEntry = table.getEntry("SingleKeySetter");
+    static String getSetClasses(){
+        NetworkTableEntry keyEntry = table.getEntry("ClassSetter");
         String key = keyEntry.getString("");
         if(!key.isEmpty()){
             keyEntry.setString("");

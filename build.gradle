@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 group 'me.nabdev.oxconfig'
-version '0.0.7b25'
+version '0.0.8'
 
 java {
     withSourcesJar()
@@ -40,7 +40,7 @@ test {
 
 publishing {
     publications {
-        autoConfig(MavenPublication) {
+        OxConfig(MavenPublication) {
             from components.java
         }
     }

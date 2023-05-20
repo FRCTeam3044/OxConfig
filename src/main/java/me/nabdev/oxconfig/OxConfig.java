@@ -12,6 +12,7 @@ import com.amihaiemil.eoyaml.YamlPrinter;
 import com.amihaiemil.eoyaml.extensions.MergedYamlMapping;
 
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * A flexible, dynamic YAML based automatic configuration system for FRC robots
@@ -31,10 +32,23 @@ public class OxConfig {
      * The current modeSelector, used to determine which config values to use
      */
     public static ModeSelector modeSelector = new ModeSelector();
+    
+    private static boolean initializedFromCode = false;
+
+    /**
+     * Initializes the config system, should be called in robotInit()
+     */
+    public static void initialize(){
+        initializedFromCode = true;
+        NT4Interface.initalize();
+        reload();
+    }
+
     /**
      * Updates all the configurable parameters/configurable classes (NOT FROM FILE, use reloadFromDisk() instead)
      */
     public static void reload(){
+        if(!initializedFromCode) return;
         if(!hasReadFromFile){
             reloadFromFile();
             hasReadFromFile = true;
@@ -100,7 +114,7 @@ public class OxConfig {
     public static void registerParameter(String key, ConfigurableParameter<?> parameter){
         configValues.put(key, parameter);
         configurableParameters.put(key, parameter);
-        reload();
+        //reload();
     }
 
     /**
@@ -111,7 +125,7 @@ public class OxConfig {
      */
     public static void registerClassParameter(String key, ConfigurableClassParam<?> parameter){
         configValues.put(key, parameter);
-        reload();
+        //reload();
     }
 
     private static void reloadFromFile(){
@@ -129,7 +143,13 @@ public class OxConfig {
             if(keys[0].equalsIgnoreCase("root")){
                 String newKey = String.join("/", Arrays.copyOfRange(keys, 1, keys.length));
                 ensureExists(newKey, configValues.get(key).get().toString());
-                setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(newKey, config), key);
+                if(key == "root/mode"){
+                    if(!(RobotBase.isSimulation() && modeSelector.getMode().equals("simulation"))){
+                        setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(newKey, config), key);
+                    }
+                } else {
+                    setValue(configValues.get(key), keys[keys.length - 1], getNestedValue(newKey, config), key);
+                }
             } else {
                 for(String mode : ModeSelector.modes) {
                     ensureExists(mode + "/" + key, configValues.get(key).get().toString());
@@ -241,6 +261,7 @@ public class OxConfig {
      * OxConfig can be run without this if you aren't interested in these features. Designed to be run in periodic.
      */
     public static void runNTInterface(){
+        if(!NT4Interface.hasInitialized) return;
         handleKeySetter();
         if(pendingNTUpdate){
             pendingNTUpdate = false;
@@ -271,20 +292,74 @@ public class OxConfig {
 
         String modeSet = NT4Interface.getSetModes();
         if(Arrays.asList(ModeSelector.modes).contains(modeSet)){
-            config = modifyValue("mode", modeSet, "Set Mode", config);
+            config = modifyValue("mode", modeSet, "Current Mode", config);
             reload();
+            if(modeSelector != null && RobotBase.isSimulation() && modeSelector.getMode().equals("simulation")){
+                modeSelector.setMode(modeSet);
+            }
         }
 
-        String singleKeySet = NT4Interface.getSetSingleKeys();
-        if(!singleKeySet.isEmpty()){
-            String[] keySet = singleKeySet.split(",");
-            String key = keySet[0];
-            String mode = keySet[1];
-            if(!Arrays.asList(ModeSelector.modes).contains(mode)){
-                System.out.println("Invalid mode: " + mode);
-                return;
+        String classSet = NT4Interface.getSetClasses();
+        if(!classSet.isEmpty()){
+            String[] keySet = classSet.split(",");
+            String classSetType = keySet[0];
+            if(classSetType.equals("single")){
+                String key = keySet[1];
+                String mode = keySet[2];
+                if(!Arrays.asList(ModeSelector.modes).contains(mode)){
+                    System.out.println("Invalid mode: " + mode);
+                    return;
+                }
+                config = modifyValue(mode + "/" + key, keySet[3], "Modified by Tuner", config);
+            } else if(classSetType.equals("copyOne")){
+                String key = keySet[1];
+                String sourceMode = keySet[2];
+                String destMode = keySet[3];
+
+                // Copy all values from source mode for the class key to dest mode for the class key
+                YamlMapping source = config.yamlMapping(sourceMode);
+                
+                ConfigurableClass classObj = configurableClasses.get(key);
+                if(classObj == null){
+                    System.out.println("Invalid class: " + key);
+                    return;
+                }
+
+                for(ConfigurableClassParam<?> param : classObj.getParameters()){
+                    String paramKey = param.getKey();
+                    String[] paramKeys = paramKey.split("/");
+                    YamlMapping nested = getNestedValue(paramKey, source);
+                    if(nested.string(paramKeys[paramKeys.length - 1]) != null){
+                        config = modifyValue(destMode + "/" + paramKey, nested.string(paramKeys[paramKeys.length - 1]), ("Modified by Tuner (Copied from " + sourceMode + ")"), config);
+                    }
+                }
+            } else if(classSetType.equals("copyAll")){
+                String key = keySet[1];
+                String sourceMode = keySet[2];
+
+                // Copy all values from source mode for the class key to dest mode for the class key
+                YamlMapping source = config.yamlMapping(sourceMode);
+                
+                ConfigurableClass classObj = configurableClasses.get(key);
+                if(classObj == null){
+                    System.out.println("Invalid class: " + key);
+                    return;
+                }
+
+                for(String mode : Arrays.asList(ModeSelector.modes)){
+                    if(mode == sourceMode) continue;
+                    for(ConfigurableClassParam<?> param : classObj.getParameters()){
+                        String paramKey = param.getKey();
+                        String[] paramKeys = paramKey.split("/");
+                        YamlMapping nested = getNestedValue(paramKey, source);
+                        if(nested.string(paramKeys[paramKeys.length - 1]) != null){
+                            config = modifyValue(mode + "/" + paramKey, nested.string(paramKeys[paramKeys.length - 1]), ("Modified by Tuner (Copied from " + sourceMode + ")"), config);
+                        }
+                    }
+                }
+                
             }
-            config = modifyValue(mode + "/" + key, keySet[2], "Modified by Tuner", config);
+            
             reload();
         }
         
