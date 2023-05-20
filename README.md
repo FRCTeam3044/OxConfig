@@ -21,7 +21,7 @@ maven {
 If you don't have a token, follow the guide [here](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (On step 3 and 4, you will need to select "Tokens (classic)". You will need to grant the token the `read:packges` scope before it can be used. 
 
 After adding the repo, add the following to dependencies in your build.grade:
-`implementation 'me.nabdev.oxconfig:oxconfig-wpi:0.0.3'`
+`implementation 'me.nabdev.oxconfig:oxconfig-wpi:0.0.8'`
 
 ## Getting Started
 Check out the [wiki](https://github.com/FRCTeam3044/OxConfig/wiki) for help on getting started.
