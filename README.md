@@ -1,7 +1,7 @@
 # OxConfig
 A modular and flexible utility for automatically setting up a YAML based config file and tuning over NetworkTables.
 
-_Developed by [nab138](https://github.com/nab138), this version is intended for use by FIRST teams using WPILib (not endorsed by WPI). A standard java version is also available (will be coming soon)._
+_Developed by [nab138](https://github.com/nab138), this version is intended for use by FIRST teams using WPILib (not endorsed by WPI). A standard java version that doesn't depend on WPIlib will be coming soon._
 
 **This module is in very early beta and breaking changes will be made frequently. It is not considered stable yet so user beware.**
 
@@ -18,7 +18,7 @@ maven {
     }
 }
 ```
-If you don't have a token, [contact nab138](mailto:nab@nabdev.me). This package will hopefully be put on maven central after beta testing is over.
+If you don't have a token, follow the guide [here](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (On step 3 and 4, you will need to select "Tokens (classic)". You will need to grant the token the `read:packges` scope before it can be used. 
 
 After adding the repo, add the following to dependencies in your build.grade:
 `implementation 'me.nabdev.oxconfig:oxconfig-wpi:0.0.3'`
