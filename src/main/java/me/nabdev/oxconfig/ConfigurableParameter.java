@@ -31,10 +31,16 @@ public class ConfigurableParameter<T> implements Configurable<T> {
 
     /**
      * Creates a new ConfigurableParameter with the given value and key, and registers it with the OxConfig
-     * @param val Default value
-     * @param key YAML key to register with (e.g. "driveTrain/maxSpeed")
+     * @param val Default value, must not include commas
+     * @param key YAML key to register with (e.g. "driveTrain/maxSpeed"), must not include commas
      */
     public ConfigurableParameter(T val, String key) {
+        if(key.contains(",")){
+            throw new IllegalArgumentException("Key must not contain commas: " + key);
+        }
+        if(val.toString().contains(",")){
+            throw new IllegalArgumentException("Value must not contain commas: " + val);
+        }
         value = val;
         setter = (T t) -> {};
         OxConfig.registerParameter(key, this);
@@ -42,11 +48,17 @@ public class ConfigurableParameter<T> implements Configurable<T> {
 
     /**
      * Creates a new ConfigurableParameter with the given value and key, and registers it with the OxConfig
-     * @param val Default value
-     * @param key YAML key to register with (e.g. "driveTrain/maxSpeed")
+     * @param val Default value, must not include commas
+     * @param key YAML key to register with (e.g. "driveTrain/maxSpeed"), must not include commas
      * @param callback Callback function on value change
      */
     public ConfigurableParameter(T val, String key, Consumer<T> callback) {
+        if(key.contains(",")){
+            throw new IllegalArgumentException("Key must not contain commas: " + key);
+        }
+        if(val.toString().contains(",")){
+            throw new IllegalArgumentException("Value must not contain commas: " + val);
+        }
         value = val;
         setter = callback;
         OxConfig.registerParameter(key, this);

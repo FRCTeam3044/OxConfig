@@ -48,6 +48,15 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
      * @param key The yaml key for the value to be stored in (e.g. "kP")
      */
     public ConfigurableClassParam(ConfigurableClass myClass, T val, Consumer<T> setter, String key) {
+        if(key.contains(",")){
+            throw new IllegalArgumentException("Key must not contain commas: " + key);
+        }
+        if(val.toString().contains(",")){
+            throw new IllegalArgumentException("Value must not contain commas: " + val);
+        }
+        if(myClass.getKey().contains(",")){
+            throw new IllegalArgumentException("Key must not contain commas: " + myClass.getKey());
+        }
         value = val;
         this.setter = setter;
         this.key = myClass.getKey() + "/" + key;
@@ -62,6 +71,15 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
      * @param key The yaml key for the value to be stored in (e.g. "kP")
      */
     public ConfigurableClassParam(ConfigurableClass myClass, T val, String key) {
+        if(key.contains(",")){
+            throw new IllegalArgumentException("Key must not contain commas: " + key);
+        }
+        if(val.toString().contains(",")){
+            throw new IllegalArgumentException("Value must not contain commas: " + val);
+        }
+        if(myClass.getKey().contains(",")){
+            throw new IllegalArgumentException("Key must not contain commas: " + myClass.getKey());
+        }
         value = val;
         this.setter = (T t) -> {};
         this.key = myClass.getKey() + "/" + key;
