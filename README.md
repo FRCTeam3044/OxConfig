@@ -7,6 +7,8 @@ _Developed by [nab138](https://github.com/nab138), this version is intended for 
 
 Inteded for use with [AdvantageScope-3044](https://github.com/FRCTeam3044/AdvantageScope-3044/) for tuning and editng values live. OxConfig can run without it, but it is not recommended.
 
+Questions, suggestions, bug reports, or just want to chat? Come join us on our [Discord!](https://discord.gg/aBMPrADRCm)
+
 ## Installation
 You will need to add the Github packages maven repository to the repositories section in `build.gradle`
 ```gradle
