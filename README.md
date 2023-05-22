@@ -9,6 +9,8 @@ Inteded for use with [AdvantageScope-3044](https://github.com/FRCTeam3044/Advant
 
 Questions, suggestions, bug reports, or just want to chat? Come join us on our [Discord!](https://discord.gg/aBMPrADRCm)
 
+Check out our [slideshow](https://docs.google.com/presentation/d/1QuVK_aaOHk0eIedKAgRVHNj8FFaLIJ0PjUWnntIh-NE/edit?usp=sharing) for an intro to OxConfig.
+
 ## Installation
 You will need to add the Github packages maven repository to the repositories section in `build.gradle`
 ```gradle
