@@ -31,7 +31,7 @@ public class OxConfig {
     /**
      * The current modeSelector, used to determine which config values to use
      */
-    public static ModeSelector modeSelector = new ModeSelector();
+    public static ModeSelector modeSelector;
     
     private static boolean initializedFromCode = false;
 
@@ -40,8 +40,25 @@ public class OxConfig {
      */
     public static void initialize(){
         initializedFromCode = true;
+        modeSelector = new ModeSelector();
         NT4Interface.initalize();
         reload();
+    }
+
+    /**
+     * Sets the list of modes that OxConfig will store values for. If not called, defaults to Presentaion, Competition, Testing, and Simulation. 
+     * Simulation will be automatically added to the list of modes if not present. Call before OxConfig.initialize().
+     * @param modes the new list of modes
+     */
+    public static void setModeList(String... modes){
+        // Make sure simulation is in the list of modes and ensure all are lowercase
+        ArrayList<String> modeList = new ArrayList<>();
+        for(String mode : modes){
+            if(mode.toLowerCase().equals("simulation")) continue;
+            modeList.add(mode.toLowerCase());
+        }
+        modeList.add("simulation");
+        ModeSelector.modes = modeList.toArray(new String[0]);
     }
 
     /**

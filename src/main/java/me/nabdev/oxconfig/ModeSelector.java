@@ -12,13 +12,13 @@ import edu.wpi.first.wpilibj.RobotBase;
 public class ModeSelector {
     private String currentMode = "testing";
     private boolean hasInitialized = false;
-    final ConfigurableParameter<String> modeParam = new ConfigurableParameter<String>("testing", "root/mode", this::setMode);
+    final ConfigurableParameter<String> modeParam = new ConfigurableParameter<String>(modes[0], "root/mode", this::setMode);
 
     /**
      * Valid modes for the robot
      */
     public static String[] modes = {
-        "presentation", "competition", "testing", "simulation"
+        "testing", "competition", "presentation", "simulation"
     };
 
     // Should call reload in OxConfig
