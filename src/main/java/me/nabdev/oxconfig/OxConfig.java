@@ -163,6 +163,8 @@ public class OxConfig {
         try {
             if(obj.get() instanceof Double){
                 ((Configurable<Double>)obj).set(map.doubleNumber(key));
+            } else if (obj.get() instanceof Float){
+                ((Configurable<Float>)obj).set(map.floatNumber(key));
             } else if(obj.get() instanceof Integer){
                 ((Configurable<Integer>)obj).set(map.integer(key));
             } else if(obj.get() instanceof Boolean){
