@@ -24,7 +24,7 @@ maven {
 ```
 
 After adding the repo, add the following to dependencies in your build.grade:
-`implementation 'me.nabdev.oxconfig:oxconfig-wpi:0.0.9'`
+`implementation 'me.nabdev.oxconfig:oxconfig-wpi:0.0.10'`
 
 ## Getting Started
 Check out the [wiki](https://github.com/FRCTeam3044/OxConfig/wiki) for help on getting started.
