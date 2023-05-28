@@ -55,6 +55,7 @@ public class OxConfig {
         ArrayList<String> modeList = new ArrayList<>();
         for(String mode : modes){
             if(mode.toLowerCase().equals("simulation")) continue;
+            if(mode.contains(",")) throw new IllegalArgumentException("Mode names cannot contain commas");
             modeList.add(mode.toLowerCase());
         }
         modeList.add("simulation");
