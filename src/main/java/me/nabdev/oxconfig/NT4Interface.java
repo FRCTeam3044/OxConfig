@@ -32,6 +32,10 @@ public class NT4Interface {
         table.getEntry("Modes").setString(String.join(",", ModeSelector.modes));
     }
 
+    static void setProfilingTime(String key, double time){
+        table.getSubTable("Profiling").getEntry(key).setDouble(time);
+    }
+
     static String getSetKeys(){
         NetworkTableEntry keyEntry = table.getEntry("KeySetter");
         String key = keyEntry.getString("");

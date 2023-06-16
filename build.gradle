@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 group 'me.nabdev.oxconfig'
-version '0.0.11'
+version '0.0.11-logging2'
 
 java {
     withSourcesJar()

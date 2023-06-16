@@ -66,16 +66,20 @@ public class OxConfig {
      * Updates all the configurable parameters/configurable classes (NOT FROM FILE, use reloadFromDisk() instead)
      */
     public static void reload(){
+        TaskTimer timer = new TaskTimer();
         if(!initializedFromCode) return;
         if(!hasReadFromFile){
             reloadFromFile();
             hasReadFromFile = true;
         }
+        timer.logTime("ReloadFile");
         reloadConfig();
+        timer.logTime("ReloadConfig");
         if(hasModified){
             writeFiles();
             hasModified = false;
         }
+        timer.logTime("WriteFile");
         hasInitialized = true;
     }
 
