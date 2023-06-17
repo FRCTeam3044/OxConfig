@@ -34,15 +34,34 @@ public class OxConfig {
     public static ModeSelector modeSelector;
     
     private static boolean initializedFromCode = false;
+    private static boolean runNTInterface = true;
+
+    public static void disableNTInterface(){
+        runNTInterface = false;
+    }
 
     /**
      * Initializes the config system, should be called in robotInit()
      */
     public static void initialize(){
-        initializedFromCode = true;
-        modeSelector = new ModeSelector();
-        NT4Interface.initalize();
-        reload();
+        Thread name = new Thread(() -> {
+            try {
+                initializedFromCode = true;
+                modeSelector = new ModeSelector();
+                NT4Interface.initalize();
+                reload();
+                if(!runNTInterface) return;
+                while (!Thread.currentThread().isInterrupted()) {
+                    runNTInterface();
+                    Thread.sleep(100);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                }
+            });
+        name.setName("OxConfig Handler");
+        name.setPriority(Thread.MIN_PRIORITY);
+        name.start();
     }
 
     /**
