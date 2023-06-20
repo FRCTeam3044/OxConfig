@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.RobotBase;
 /**
  * Class for selecting the current mode of the robot.
  */
-public class ModeSelector {
+class ModeSelector {
     private String currentMode = "testing";
     private boolean hasInitialized = false;
-    final ConfigurableParameter<String> modeParam = new ConfigurableParameter<String>(modes[0], "root/mode", this::setMode);
+    final ConfigurableParameter<String> modeParam = new ConfigurableParameter<>(modes[0], "root/mode", this::setMode);
 
     /**
      * Valid modes for the robot
@@ -39,7 +39,7 @@ public class ModeSelector {
                 }
             }
         } else {
-            System.out.println("Invalid mode: " + mode);
+            Logger.logWarning("Invalid mode: " + mode + ". Valid modes are: " + String.join(", ", modes));
         }
     }
 

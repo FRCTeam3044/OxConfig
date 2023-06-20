@@ -3,7 +3,6 @@ package me.nabdev.oxconfig;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Objects;
 
 import org.json.JSONArray;
 
@@ -16,50 +15,64 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 /**
  * A helper class for interfacing with NetworkTables
  */
-public class NT4Interface {
+class NT4Interface {
     private static final NetworkTable table;
+    private static final NetworkTableEntry paramsEntry;
+    private static final NetworkTableEntry modesEntry;
+    private static final NetworkTableEntry keySetterEntry;
+    private static final NetworkTableEntry classSetterEntry;
+    private static final NetworkTableEntry modeSetterEntry;
+    private static final NetworkTableEntry rawEntry;
+
+    private static final NetworkTableEntry currentModeEntry;
+    private static final NetworkTable profiling;
     static boolean hasInitialized = false;
 
     static {
         table = NetworkTableInstance.getDefault().getTable("OxConfig");
+        paramsEntry = table.getEntry("Params");
+        modesEntry = table.getEntry("Modes");
+        keySetterEntry = table.getEntry("KeySetter");
+        classSetterEntry = table.getEntry("ClassSetter");
+        modeSetterEntry = table.getEntry("ModeSetter");
+        rawEntry = table.getEntry("Raw");
+        currentModeEntry = table.getEntry("CurrentMode");
+        profiling = table.getSubTable("Profiling");
     }
 
-    static void initalize() {
+    static void initialize() {
         hasInitialized = true;
-        table.getEntry("KeySetter").setString("");
-        table.getEntry("ClassSetter").setString("");
-        table.getEntry("ModeSetter").setString("");
-        table.getEntry("Modes").setString(String.join(",", ModeSelector.modes));
+        keySetterEntry.setString("");
+        classSetterEntry.setString("");
+        modeSetterEntry.setString("");
+        modesEntry.setString(String.join(",", ModeSelector.modes));
     }
 
     static void setProfilingTime(String key, double time){
-        table.getSubTable("Profiling").getEntry(key).setDouble(time);
+        profiling.getEntry(key).setDouble(time);
     }
 
     static String getSetKeys(){
-        NetworkTableEntry keyEntry = table.getEntry("KeySetter");
-        String key = keyEntry.getString("");
+        String key = keySetterEntry.getString("");
         if(!key.isEmpty()){
-            keyEntry.setString("");
+            keySetterEntry.setString("");
         }
         return key;
     }
 
     static String getSetClasses(){
-        NetworkTableEntry keyEntry = table.getEntry("ClassSetter");
-        String key = keyEntry.getString("");
+        String key = classSetterEntry.getString("");
         if(!key.isEmpty()){
-            keyEntry.setString("");
+            classSetterEntry.setString("");
         }
         return key;
     }
 
 
     static String getSetModes(){
-        NetworkTableEntry modeEntry = table.getEntry("ModeSetter");
-        String mode = modeEntry.getString("");
+        String mode = modeSetterEntry.getString("");
         if(!mode.isEmpty()){
-            modeEntry.setString("");
+            modeSetterEntry.setString("");
         }
         return mode;
     }
@@ -79,10 +92,9 @@ public class NT4Interface {
                 String key = param.getKey();
                 paramArr.put(key);
                 paramArr.put(param.get().getClass().getSimpleName());
-                String[] keys = key.split("/");
                 for(String mode : ModeSelector.modes){
-                    YamlMapping curModeNested = OxConfig.getNestedValue(mode + "/" + key, OxConfig.config);
-                    paramArr.put(curModeNested.string(keys[keys.length - 1]));
+                    YamlMapping curModeMap = YamlUtils.getModeMap(mode);
+                    paramArr.put(curModeMap.string(key));
                 }
                 classArr.put(paramArr);
             }
@@ -94,37 +106,32 @@ public class NT4Interface {
     static void updateParameters(HashMap<String, ConfigurableParameter<?>> parameters){
         JSONArray params = new JSONArray();
         for(String paramKey : parameters.keySet()){
-            String[] keys = paramKey.split("/");
+            if(paramKey.equalsIgnoreCase("root/mode")){
+                continue;
+            }
             JSONArray paramArr = new JSONArray();
             ConfigurableParameter<?> param = parameters.get(paramKey);
             paramArr.put(paramKey);
-            YamlMapping nested = OxConfig.getNestedValue(OxConfig.appendModeIfNotRoot(paramKey), OxConfig.config);
-            String finalKey = keys[keys.length - 1];
-            paramArr.put(nested.value(finalKey).comment().value());
+
+            YamlMapping nested = YamlUtils.getModeMap(OxConfig.modeSelector.getMode());
+            paramArr.put(nested.value(paramKey).comment().value());
             // Put the type of the parameter
             paramArr.put(param.get().getClass().getSimpleName());
-            if(keys[0].equals("root")){
-                paramArr.put(param.get());
-            } else {
-                for(String mode : ModeSelector.modes){
-                    YamlMapping curModeNested = OxConfig.getNestedValue(mode + "/" + paramKey, OxConfig.config);
-                    paramArr.put(curModeNested.string(keys[keys.length - 1]));
-                }
+            for(String mode : ModeSelector.modes){
+                YamlMapping curModeNested = YamlUtils.getModeMap(mode);
+                paramArr.put(curModeNested.string(paramKey));
             }
             params.put(paramArr);
         }
-        table.getEntry("Params").setString(params.toString());
+        paramsEntry.setString(params.toString());
     }
 
     static void updateRaw(YamlMapping raw){
-        String string = raw.toString();
-        if(!Objects.equals(string, table.getEntry("Raw").getString(""))) {
-            String timestamp = String.valueOf(new Date().getTime());
-            table.getEntry("Raw").setString(timestamp + "," + raw);
-        }
+        String timestamp = String.valueOf(new Date().getTime());
+        rawEntry.setString(timestamp + "," + raw);
     }
 
     static void updateMode(){
-        table.getEntry("CurrentMode").setString(OxConfig.modeSelector.getMode());
+        currentModeEntry.setString(OxConfig.modeSelector.getMode());
     }
 }

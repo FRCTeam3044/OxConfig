@@ -13,15 +13,15 @@ public interface ConfigurableClass {
      * Gets the parameters of the configurable class
      * @return The parameters of the configurable class
      */
-    public ArrayList<ConfigurableClassParam<?>> getParameters();
+    ArrayList<ConfigurableClassParam<?>> getParameters();
     /**
-     * Gets the key of the configurable class (e.g. "subsystems/arm")
+     * Gets the key of the configurable class (e.g. "leftWheelSpeed"), must not include commas
      * @return The key of the configurable class
      */
-    public String getKey();
+    String getKey();
     /**
      * Gets the pretty name of the configurable class (e.g. "Arm")
      * @return The pretty name of the configurable class
      */
-    public String getPrettyName();
+    String getPrettyName();
 }
