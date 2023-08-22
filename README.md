@@ -7,7 +7,7 @@ _Developed by [nab138](https://github.com/nab138), this version is intended for 
 
 Inteded for use with [AdvantageScope-3044](https://github.com/FRCTeam3044/AdvantageScope-3044/) for tuning and editng values live. OxConfig can run without it, but it is not recommended.
 
-Questions, suggestions, bug reports, or just want to chat? Come join us on our [Discord!](https://discord.gg/aBMPrADRCm)
+Questions, suggestions, bug reports, or just want to chat? **Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for support, discussion, and more!**
 
 Check out our [slideshow](https://docs.google.com/presentation/d/1QuVK_aaOHk0eIedKAgRVHNj8FFaLIJ0PjUWnntIh-NE/edit?usp=sharing) for an intro to OxConfig.
 
