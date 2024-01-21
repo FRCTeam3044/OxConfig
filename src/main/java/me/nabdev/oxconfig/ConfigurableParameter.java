@@ -32,7 +32,7 @@ public class ConfigurableParameter<T> implements Configurable<T> {
     /**
      * Creates a new ConfigurableParameter with the given value and key, and registers it with the OxConfig
      * @param val Default value, must not include commas
-     * @param key YAML key to register with (e.g. "driveTrain/maxSpeed"), must not include commas
+     * @param key YAML key to register with (e.g. "driveTrainMaxSpeed"), must not include commas
      */
     public ConfigurableParameter(T val, String key) {
         if(key.contains(",")){
