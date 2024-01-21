@@ -1,13 +1,13 @@
 plugins {
     id 'java-library'
-    id "edu.wpi.first.GradleRIO" version "2023.4.3"
+    id "edu.wpi.first.GradleRIO" version "2024.1.1"
     id 'maven-publish'
 }
 
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 group 'me.nabdev.oxconfig'
-version '1.0.1-SNAPSHOT'
+version '1.0.3'
 
 java {
     withSourcesJar()
@@ -28,9 +28,9 @@ dependencies {
 
     implementation 'org.json:json:20230227'
     implementation group: 'com.amihaiemil.web', name: 'eo-yaml', version: '7.0.6'
-    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2023.+'
-    implementation 'edu.wpi.first.wpimath:wpimath-java:2023.+'
-    implementation 'edu.wpi.first.ntcore:ntcore-java:2023.+'
+    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2024.+'
+    implementation 'edu.wpi.first.wpimath:wpimath-java:2024.+'
+    implementation 'edu.wpi.first.ntcore:ntcore-java:2024.+'
 
 }
 

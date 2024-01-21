@@ -3,7 +3,7 @@ package me.nabdev.oxconfig.sampleClasses;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import me.nabdev.oxconfig.ConfigurableClass;
 import me.nabdev.oxconfig.ConfigurableClassParam;
@@ -11,7 +11,8 @@ import me.nabdev.oxconfig.OxConfig;
 
 /**
  * A configurable Talon FX PID controller.
- * This class is an example of how to use the ConfigurableClass interface, but is safe for competition use.
+ * This class is an example of how to use the ConfigurableClass interface, but
+ * is safe for competition use.
  */
 public class ConfigurableTalonFXPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
@@ -22,7 +23,7 @@ public class ConfigurableTalonFXPIDController implements ConfigurableClass {
 
     private final ArrayList<ConfigurableClassParam<?>> params = new ArrayList<>();
 
-    private TalonFX motorController;
+    private TalonSRX motorController;
 
     private String key;
     private String prettyName;
@@ -33,7 +34,7 @@ public class ConfigurableTalonFXPIDController implements ConfigurableClass {
      * @param controller The Talon FX motor controller to be configured
      * @param key        The yaml key for the controller to be stored in
      */
-    public ConfigurableTalonFXPIDController(TalonFX controller, String key) {
+    public ConfigurableTalonFXPIDController(TalonSRX controller, String key) {
         String[] keys = key.split("/");
         initialize(controller, key, keys[keys.length - 1]);
     }
@@ -45,11 +46,11 @@ public class ConfigurableTalonFXPIDController implements ConfigurableClass {
      * @param key        The yaml key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
-    public ConfigurableTalonFXPIDController(TalonFX controller, String key, String prettyName) {
+    public ConfigurableTalonFXPIDController(TalonSRX controller, String key, String prettyName) {
         initialize(controller, key, prettyName);
     }
 
-    private void initialize(TalonFX controller, String key, String prettyName) {
+    private void initialize(TalonSRX controller, String key, String prettyName) {
         this.key = key;
         this.prettyName = prettyName;
         motorController = controller;
