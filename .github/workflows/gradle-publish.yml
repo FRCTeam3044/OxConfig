@@ -45,7 +45,7 @@ jobs:
         USERNAME: ${{ github.actor }}
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Deploy 🚀
+    - name: Deploy Javadocs
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: build/docs/javadoc
