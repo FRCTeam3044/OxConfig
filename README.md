@@ -23,6 +23,14 @@ Check out our
 [slideshow](https://docs.google.com/presentation/d/1QuVK_aaOHk0eIedKAgRVHNj8FFaLIJ0PjUWnntIh-NE/edit?usp=sharing)
 for an intro to OxConfig.
 
+
+## Getting Started
+
+To install, view the installation guide below.
+
+Check out the [wiki](https://github.com/FRCTeam3044/OxConfig/wiki) for help on
+getting started. [Javadocs](https://frcteam3044.github.io/OxConfig/) are available online or in code as well.
+
 ## Installation
 
 You will need to add the Github packages maven repository to the repositories
@@ -40,11 +48,6 @@ maven {
 
 After adding the repo, add the following to dependencies in your build.grade:
 `implementation 'me.nabdev.oxconfig:oxconfig-wpi:1.0.4-SNAPSHOT'`
-
-## Getting Started
-
-Check out the [wiki](https://github.com/FRCTeam3044/OxConfig/wiki) for help on
-getting started.
 
 ## Links
 

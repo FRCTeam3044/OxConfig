@@ -11,15 +11,19 @@ on:
   workflow_dispatch:
   release:
     types: [created]
-
+    
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  packages: write
+  
 jobs:
   build:
-
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -44,3 +48,12 @@ jobs:
       env:
         USERNAME: ${{ github.actor }}
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+    - name: Upload Javadoc artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './build/docs/javadoc'
+    - name: Deploy Javadoc to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
