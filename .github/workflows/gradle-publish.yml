@@ -46,3 +46,12 @@ jobs:
       env:
         USERNAME: ${{ github.actor }}
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+    - name: Upload Javadoc artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './build/docs/javadoc'
+    - name: Deploy Javadoc to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
