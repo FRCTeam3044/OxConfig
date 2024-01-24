@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
-// Using a configurable class for now. May change later once individual parameter editing is implemented
-
 /**
  * Class for selecting the current mode of the robot.
  */

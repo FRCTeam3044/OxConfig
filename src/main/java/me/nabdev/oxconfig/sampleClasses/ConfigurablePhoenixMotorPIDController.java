@@ -11,9 +11,9 @@ import me.nabdev.oxconfig.OxConfig;
 
 /**
  * A configurable Talon SRX or Victor SPX PID controller.
- * This class is an example of how to use the ConfigurableClass interface, but is safe for competition use.
+ * This class is an example of how to use the ConfigurableClass interface, but
+ * is safe for competition use.
  */
-
 public class ConfigurablePhoenixMotorPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
     private ConfigurableClassParam<Double> kiParam;
