@@ -47,11 +47,11 @@ maven {
 ```
 
 After adding the repo, add the following to dependencies in your build.grade:
-`implementation 'me.nabdev.oxconfig:oxconfig-wpi:1.0.4-SNAPSHOT'`
+`implementation 'me.nabdev.oxconfig:oxconfig-wpi:1.2.1-SNAPSHOT'`
 
 ## Links
 
 - [JSON-java](https://github.com/stleary/JSON-java)
 - [allwpilib](https://github.com/wpilibsuite/allwpilib)
 - [REV Lib](https://docs.revrobotics.com/sparkmax/software-resources/spark-max-api-information)
-- [CTRE Lib v5](https://v5.docs.ctr-electronics.com/en/stable/)
+- [CTRE Lib](https://pro.docs.ctr-electronics.com/en/latest/)
