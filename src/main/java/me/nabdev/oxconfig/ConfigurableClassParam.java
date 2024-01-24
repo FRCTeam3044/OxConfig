@@ -45,7 +45,7 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
      * @param myClass The ConfigurableClass that this parameter belongs to
      * @param val Default value
      * @param setter Setter method for the value
-     * @param key The yaml key for the value to be stored in (e.g. "kP"), must not include commas
+     * @param key The json key for the value to be stored in (e.g. "kP"), must not include commas
      */
     public ConfigurableClassParam(ConfigurableClass myClass, T val, Consumer<T> setter, String key) {
         if(key.contains(",")){
@@ -68,7 +68,7 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
      * Creates a new ConfigurableClassParam with the given value and key
      * @param myClass The ConfigurableClass that this parameter belongs to
      * @param val Default value
-     * @param key The yaml key for the value to be stored in (e.g. "kP"), must not include commas
+     * @param key The json key for the value to be stored in (e.g. "kP"), must not include commas
      */
     public ConfigurableClassParam(ConfigurableClass myClass, T val, String key) {
         if(key.contains(",")){

@@ -1,6 +1,6 @@
 # OxConfig
 
-A modular and flexible utility for automatically setting up a YAML based config
+A modular and flexible utility for automatically setting up a JSON based config
 file and tuning over NetworkTables.
 
 _Developed by [nab138](https://github.com/nab138), this version is intended for
@@ -51,7 +51,6 @@ After adding the repo, add the following to dependencies in your build.grade:
 
 ## Links
 
-- [eo-yaml](https://github.com/decorators-squad/eo-yaml)
 - [JSON-java](https://github.com/stleary/JSON-java)
 - [allwpilib](https://github.com/wpilibsuite/allwpilib)
 - [REV Lib](https://docs.revrobotics.com/sparkmax/software-resources/spark-max-api-information)

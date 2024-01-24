@@ -27,7 +27,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
      * @param kp The proportional coefficient.
      * @param ki The integral coefficient.
      * @param kd The derivative coefficient.
-     * @param key The yaml key for the controller to be stored in
+     * @param key The json key for the controller to be stored in
      */
     public ConfigurablePIDController(double kp, double ki, double kd, String key) {
         super(kp, ki, kd);
@@ -43,7 +43,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
      * @param kp The proportional coefficient.
      * @param ki The integral coefficient.
      * @param kd The derivative coefficient.
-     * @param key The yaml key for the controller to be stored in
+     * @param key The json key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
     public ConfigurablePIDController(double kp, double ki, double kd, String key, String prettyName) {

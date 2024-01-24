@@ -35,7 +35,7 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
      * If you would like to use default values, set them before creating this
      * 
      * @param controller The spark max controller to be configured
-     * @param key        The yaml key for the controller to be stored in
+     * @param key        The json key for the controller to be stored in
      */
     public ConfigurableSparkPIDController(SparkPIDController controller, String key) {
         initialize(controller, key, key);
@@ -46,7 +46,7 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
      * If you would like to use default values, set them before creating this
      * 
      * @param controller The spark max controller to be configured
-     * @param key        The yaml key for the controller to be stored in
+     * @param key        The json key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
     public ConfigurableSparkPIDController(SparkPIDController controller, String key, String prettyName) {
@@ -57,7 +57,7 @@ public class ConfigurableSparkPIDController implements ConfigurableClass {
      * Initializes the controller with the given parameters.
      * 
      * @param controller The spark max controller to be configured
-     * @param key        The yaml key for the controller to be stored in
+     * @param key        The json key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
     private void initialize(SparkPIDController myController, String key, String prettyName) {

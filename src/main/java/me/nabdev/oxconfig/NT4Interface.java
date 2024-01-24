@@ -5,8 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.json.JSONArray;
-
-import com.amihaiemil.eoyaml.YamlMapping;
+import org.json.JSONObject;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -99,8 +98,8 @@ class NT4Interface {
                 paramArr.put(key);
                 paramArr.put(param.get().getClass().getSimpleName());
                 for(String mode : ModeSelector.modes){
-                    YamlMapping curModeMap = YamlUtils.getModeMap(mode);
-                    paramArr.put(curModeMap.string(key));
+                    JSONObject curModeMap = JsonUtils.getModeMap(mode);
+                    paramArr.put(JsonUtils.getJSONObject(curModeMap, key).getString("value"));
                 }
                 classArr.put(paramArr);
             }
@@ -119,13 +118,14 @@ class NT4Interface {
             ConfigurableParameter<?> param = parameters.get(paramKey);
             paramArr.put(paramKey);
 
-            YamlMapping nested = YamlUtils.getModeMap(OxConfig.modeSelector.getMode());
-            paramArr.put(nested.value(paramKey).comment().value());
+            JSONObject nested = JsonUtils.getModeMap(OxConfig.modeSelector.getMode());
+            JSONObject data = JsonUtils.getJSONObject(nested, paramKey);
+            paramArr.put(data.getString("comment"));
             // Put the type of the parameter
             paramArr.put(param.get().getClass().getSimpleName());
             for(String mode : ModeSelector.modes){
-                YamlMapping curModeNested = YamlUtils.getModeMap(mode);
-                paramArr.put(curModeNested.string(paramKey));
+                JSONObject curModeNested = JsonUtils.getModeMap(mode);
+                paramArr.put(JsonUtils.getJSONObject(curModeNested, paramKey).getString("value"));
             }
             params.put(paramArr);
         }

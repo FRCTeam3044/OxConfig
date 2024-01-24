@@ -14,7 +14,7 @@ import me.nabdev.oxconfig.OxConfig;
  * This class is an example of how to use the ConfigurableClass interface, but
  * is safe for competition use.
  */
-public class ConfigurableTalonFXPIDController implements ConfigurableClass {
+public class ConfigurableTalonSRXPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
     private ConfigurableClassParam<Double> kiParam;
     private ConfigurableClassParam<Double> kdParam;
@@ -32,9 +32,9 @@ public class ConfigurableTalonFXPIDController implements ConfigurableClass {
      * Sets up a Talon FX PID controller to be autoconfigured.
      *
      * @param controller The Talon FX motor controller to be configured
-     * @param key        The yaml key for the controller to be stored in
+     * @param key        The json key for the controller to be stored in
      */
-    public ConfigurableTalonFXPIDController(TalonSRX controller, String key) {
+    public ConfigurableTalonSRXPIDController(TalonSRX controller, String key) {
         String[] keys = key.split("/");
         initialize(controller, key, keys[keys.length - 1]);
     }
@@ -43,10 +43,10 @@ public class ConfigurableTalonFXPIDController implements ConfigurableClass {
      * Sets up a Talon FX PID controller to be autoconfigured.
      *
      * @param controller The Talon FX motor controller to be configured
-     * @param key        The yaml key for the controller to be stored in
+     * @param key        The json key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
-    public ConfigurableTalonFXPIDController(TalonSRX controller, String key, String prettyName) {
+    public ConfigurableTalonSRXPIDController(TalonSRX controller, String key, String prettyName) {
         initialize(controller, key, prettyName);
     }
 

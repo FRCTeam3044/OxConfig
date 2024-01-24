@@ -1,27 +1,50 @@
 package me.nabdev.oxconfig;
 
-import com.amihaiemil.eoyaml.Yaml;
-import com.amihaiemil.eoyaml.YamlMapping;
-import com.amihaiemil.eoyaml.YamlMappingBuilder;
-import com.amihaiemil.eoyaml.extensions.MergedYamlMapping;
-
 import static me.nabdev.oxconfig.OxConfig.config;
 import static me.nabdev.oxconfig.OxConfig.configString;
 
+import org.json.JSONObject;
+
 /**
- * A helper class for interfacing with eo-yaml
+ * A helper class for interfacing with org.json
  */
-class YamlUtils {
+class JsonUtils {
 
     private static boolean dirty = false;
 
     /**
-     * Get the YamlMapping for the given mode
+     * Get the JSON Mapping for the given mode
      * @param mode The mode to get the mapping for
      * @return The mapping for the given mode
      */
-    static YamlMapping getModeMap(String mode) {
-        return config.yamlMapping(mode);
+    static JSONObject getModeMap(String mode) {
+        return getJSONObject(config, mode);
+    }
+
+    /**
+     * Get the JSON Object for the given key, creating it if it does not exist
+     * @param obj The object to get the key from
+     * @param key The key to get
+     * @return The JSON Object for the given key
+     */
+    static JSONObject getJSONObject(JSONObject obj, String key){
+        if(!obj.has(key)){
+            obj.put(key, new JSONObject());
+        }
+        return obj.getJSONObject(key);
+    }
+
+    /**
+     * Get the real value of a key
+     * @param map The map to get the value from
+     * @param key The key to get the value for
+     * @return The real value of the key
+     */
+    static String getRealValue(JSONObject map, String key){
+        if(key.equals("mode")) {
+            return map.getString(key);
+        }
+        return getJSONObject(map, key).getString("value");
     }
 
     /**
@@ -29,10 +52,9 @@ class YamlUtils {
      * @param mode The default mode to use if the key does not exist
      */
     static void ensureModeExists(String mode) {
-        if(config.string("mode") == null){
+        if(!config.has("mode")){
             Logger.logInfo("Mode key does not exist, creating");
-            config = new MergedYamlMapping(config, Yaml.createYamlMappingBuilder().add("mode", mode).build(), true);
-            configString = config.toString();
+            modifyMode(mode);
         }
     }
 
@@ -41,7 +63,7 @@ class YamlUtils {
      * @param mode The mode to change to
      */
     static void modifyMode(String mode) {
-        config = new MergedYamlMapping(config, Yaml.createYamlMappingBuilder().add("mode", mode).build(), true);
+        config.put("mode", mode);
         configString = config.toString();
     }
 
@@ -86,17 +108,16 @@ class YamlUtils {
      */
     private static void editMap(boolean force, String mode, String key, String defaultVal, String comment) {
         // If the key already exists, return the original mapping
-        YamlMapping nested = getModeMap(mode);
-        if(!force && nested != null && nested.string(key) != null){
+        JSONObject nested = getModeMap(mode);
+        if(!force && nested != null && nested.has(key)){
             return;
         }
 
-        YamlMappingBuilder newMap = Yaml.createYamlMappingBuilder();
-        newMap = newMap.add(key, Yaml.createYamlScalarBuilder()
-                .addLine(defaultVal)
-                .buildPlainScalar(comment));
-        config = new MergedYamlMapping(config, Yaml.createYamlMappingBuilder().add(mode, newMap.build()).build(), true);
-    
+        JSONObject newObject = new JSONObject();
+        newObject.put("value", defaultVal);
+        newObject.put("comment", comment);
+        nested.put(key, newObject);
+        
         dirty = true;
         OxConfig.hasModified = true;
         OxConfig.pendingNTUpdate = true;

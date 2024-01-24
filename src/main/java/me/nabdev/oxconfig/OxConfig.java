@@ -1,19 +1,20 @@
 package me.nabdev.oxconfig;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import com.amihaiemil.eoyaml.Yaml;
-import com.amihaiemil.eoyaml.YamlMapping;
-import com.amihaiemil.eoyaml.YamlPrinter;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
- * A flexible, dynamic YAML based automatic configuration system for FRC robots
+ * A flexible, dynamic json based automatic configuration system for FRC robots
  */
 @SuppressWarnings("unused")
 public class OxConfig {
@@ -77,7 +78,7 @@ public class OxConfig {
     }
 
     /* Config Mapping Declarations */
-    static YamlMapping config;
+    static JSONObject config;
     static String configString;
     private static final HashMap<String, Configurable<?>> configValues = new HashMap<>();
     private static final HashMap<String, ConfigurableClass> configurableClasses = new HashMap<>();
@@ -99,7 +100,7 @@ public class OxConfig {
     static boolean pendingNTUpdate = false;
 
     /* Internal Parameter Declarations */
-    private static final String configPath = Filesystem.getDeployDirectory() + "/config.yml";
+    private static final String configPath = Filesystem.getDeployDirectory() + "/config.json";
     private static final int threadSleepTime = 75;
     private static EditMode editMode = EditMode.Unrestricted;
     private static FastMode fastMode = FastMode.Safe;
@@ -238,7 +239,7 @@ public class OxConfig {
      */
     public static void writeFiles() {
         TaskTimer writeTimer = new TaskTimer();
-        YamlUtils.updateConfigStr();
+        JsonUtils.updateConfigStr();
         try (FileWriter writer = new FileWriter(configPath)) {
             writer.write(configString);
             writeTimer.logTime("PrintConfig");
@@ -266,7 +267,7 @@ public class OxConfig {
     /**
      * Not for use by the user: 
      * Sets up a config value to be automatically configured (Automatically handled by ConfigurableParameter)
-     * @param key the yaml key the value will be found under in config.yml (in deploy folder)
+     * @param key the json key the value will be found under in config.json (in deploy folder)
      * @param parameter the parameter to update
      */
     public static void registerParameter(String key, ConfigurableParameter<?> parameter){
@@ -277,7 +278,7 @@ public class OxConfig {
     /**
      * Not for use by the user:
      * Sets up a configurable class param  automatically configured (Automatically handled by ConfigurableClassParam)
-     * @param key the yaml key the value will be found under in config.yml (in deploy folder)
+     * @param key the json key the value will be found under in config.json (in deploy folder)
      * @param parameter the parameter to update
      */
     public static void registerClassParameter(String key, ConfigurableClassParam<?> parameter){
@@ -286,12 +287,15 @@ public class OxConfig {
 
     private static void reloadFromFile(){
         try {
-            config = Yaml.createYamlInput(new File(configPath)).readYamlMapping();
+            // Load config json object from configPath
+            FileInputStream input = new FileInputStream(configPath);
+            JSONTokener tokener = new JSONTokener(input);
+            config = new JSONObject(tokener);
             configString = config.toString();
             pendingNTUpdate = true;
             Logger.logInfo("Reloaded config from file");
         } catch (Exception e) {
-            Logger.logError("Failed to read config file (ensure it exists in deploy folder under config.yml): " + e.getMessage());
+            Logger.logError("Failed to read config file (ensure it exists in deploy folder under config.json): " + e.getMessage());
         }
     }
 
@@ -308,7 +312,7 @@ public class OxConfig {
         String defaultVal = configurable.get().toString();
 
         if (key.equalsIgnoreCase("root/mode")) {
-            if(shouldEnsure) YamlUtils.ensureModeExists(defaultVal);
+            if(shouldEnsure) JsonUtils.ensureModeExists(defaultVal);
             // Don't write out simulation to config file when running in sim to avoid accidentally overwriting data
             if (!(RobotBase.isSimulation() && modeSelector.getMode().equals("simulation"))) {
                 setValue(configurable, "mode", config);
@@ -316,39 +320,39 @@ public class OxConfig {
         } else {
             if (shouldEnsure) {
                 for (String mode : ModeSelector.modes) {
-                    YamlUtils.ensureExists(mode, key, defaultVal);
+                    JsonUtils.ensureExists(mode, key, defaultVal);
                 }
             }
-            setValue(configurable, key, YamlUtils.getModeMap(modeSelector.getMode()));
+            setValue(configurable, key, JsonUtils.getModeMap(modeSelector.getMode()));
         }
     }
 
 
     @SuppressWarnings("unchecked")
-    private static void setValue(Configurable<?> obj, String key, YamlMapping map) {
+    private static void setValue(Configurable<?> obj, String key, JSONObject map) {
         Object value = obj.get();
         try {
             switch (value.getClass().getSimpleName()) {
                 case "Double":
-                    ((Configurable<Double>) obj).set(map.doubleNumber(key));
+                    ((Configurable<Double>) obj).set(Double.valueOf(JsonUtils.getRealValue(map, key)));
                     break;
                 case "Float":
-                    ((Configurable<Float>) obj).set(map.floatNumber(key));
+                    ((Configurable<Float>) obj).set(Float.valueOf(JsonUtils.getRealValue(map, key)));
                     break;
                 case "Integer":
-                    ((Configurable<Integer>) obj).set(map.integer(key));
+                    ((Configurable<Integer>) obj).set(Integer.valueOf(JsonUtils.getRealValue(map, key)));
                     break;
                 case "Boolean":
-                    ((Configurable<Boolean>) obj).set(Boolean.valueOf(map.string(key)));
+                    ((Configurable<Boolean>) obj).set(Boolean.valueOf(JsonUtils.getRealValue(map, key)));
                     break;
                 case "String":
-                    ((Configurable<String>) obj).set(String.valueOf(map.string(key)));
+                    ((Configurable<String>) obj).set(String.valueOf(JsonUtils.getRealValue(map, key)));
                     break;
                 case "Short":
-                    ((Configurable<Short>) obj).set(Short.valueOf(map.string(key)));
+                    ((Configurable<Short>) obj).set(Short.valueOf(JsonUtils.getRealValue(map, key)));
                     break;
                 case "Long":
-                    ((Configurable<Long>) obj).set(map.longNumber(key));
+                    ((Configurable<Long>) obj).set(Long.valueOf(JsonUtils.getRealValue(map, key)));
                     break;
                 default:
                     Logger.logWarning("Unknown Type for key " + key + ": " + value.getClass().getName());
@@ -378,7 +382,7 @@ public class OxConfig {
             timer.logTime("NT Update Parameters");
             NT4Interface.updateMode();
             timer.logTime("NT Update Mode");
-            YamlUtils.updateConfigStr();
+            JsonUtils.updateConfigStr();
             NT4Interface.updateRaw(configString);
             timer.logTime("NT Update Raw");
         }
@@ -396,7 +400,7 @@ public class OxConfig {
             for(int i = 0; i < ModeSelector.modes.length; i++){
                 String mode = ModeSelector.modes[i];
                 String key = keySet[0];
-                YamlUtils.modifyValue(mode, key, keySet[2 + i], keySet[1]);
+                JsonUtils.modifyValue(mode, key, keySet[2 + i], keySet[1]);
             }
             updateSingleKey(keySet[0]);
             timer.logTime("NT Key Setter");
@@ -405,7 +409,7 @@ public class OxConfig {
         String modeSet = NT4Interface.getSetModes();
         if(Arrays.asList(ModeSelector.modes).contains(modeSet)){
             Logger.logInfo("Mode set over NT to " + modeSet);
-            YamlUtils.modifyMode(modeSet);
+            JsonUtils.modifyMode(modeSet);
             reload();
             // If running in simulation, set the mode selector manually, since we overwrote it before without writing out to the config file
             if(modeSelector != null && RobotBase.isSimulation() && modeSelector.getMode().equals("simulation")){
@@ -428,7 +432,7 @@ public class OxConfig {
                         Logger.logWarning("Invalid mode for class set over NT: " + mode);
                         return;
                     }
-                    YamlUtils.modifyValue(mode, key, keySet[3], "Modified by Tuner");
+                    JsonUtils.modifyValue(mode, key, keySet[3], "Modified by Tuner");
                     updateSingleKey(key);
                     break;
                 }
@@ -438,7 +442,7 @@ public class OxConfig {
                     String destMode = keySet[3];
 
                     // Copy all values from source mode for the class key to dest mode for the class key
-                    YamlMapping source = YamlUtils.getModeMap(sourceMode);
+                    JSONObject source = JsonUtils.getModeMap(sourceMode);
 
                     ConfigurableClass classObj = configurableClasses.get(key);
                     if (classObj == null) {
@@ -453,7 +457,7 @@ public class OxConfig {
                     String key = keySet[1];
                     String sourceMode = keySet[2];
 
-                    YamlMapping source = YamlUtils.getModeMap(sourceMode);
+                    JSONObject source = JsonUtils.getModeMap(sourceMode);
 
                     ConfigurableClass classObj = configurableClasses.get(key);
                     if (classObj == null) {
@@ -480,12 +484,15 @@ public class OxConfig {
 
     }
 
-    private static void updateOneClass(String sourceMode, YamlMapping source, ConfigurableClass classObj, String mode) {
+    private static void updateOneClass(String sourceMode, JSONObject source, ConfigurableClass classObj, String mode) {
         for(ConfigurableClassParam<?> param : classObj.getParameters()){
             String paramKey = param.getKey();
-            String sourceVal = source.string(paramKey);
-            if(sourceVal == null) continue;
-            YamlUtils.modifyValue(mode, paramKey, sourceVal, ("Modified by Tuner (Copied from " + sourceMode + ")"));
+            if(!source.has(paramKey)){
+                continue;
+            }
+            JSONObject sourceData = JsonUtils.getJSONObject(source, paramKey);
+            String sourceVal = source.getString("value");
+            JsonUtils.modifyValue(mode, paramKey, sourceVal, ("Modified by Tuner (Copied from " + sourceMode + ")"));
             updateSingleKey(paramKey);
         }
     }
