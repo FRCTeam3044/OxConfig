@@ -304,9 +304,10 @@ public class OxConfig {
 
         if (key.equalsIgnoreCase("root/mode")) {
             if(shouldEnsure) YamlUtils.ensureModeExists(defaultVal);
+            Logger.logInfo("Last Mode (from config): " + config.string("mode"));
             // Don't write out simulation to config file when running in sim to avoid accidentally overwriting data
             if (!(RobotBase.isSimulation() && modeSelector.getMode().equals("simulation"))) {
-                setValue(configurable, key, config);
+                setValue(configurable, "mode", config);
             }
         } else {
             if (shouldEnsure) {

@@ -26,7 +26,9 @@ class YamlUtils {
      * @param mode The default mode to use if the key does not exist
      */
     static void ensureModeExists(String mode) {
+        Logger.logInfo("Ensuring mode key exists with default of " + mode);
         if(config.string("mode") == null){
+            Logger.logInfo("Mode key does not exist, creating");
             config = new MergedYamlMapping(config, Yaml.createYamlMappingBuilder().add("mode", mode).build(), true);
         }
     }
