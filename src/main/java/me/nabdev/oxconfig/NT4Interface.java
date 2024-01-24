@@ -23,6 +23,7 @@ class NT4Interface {
     private static final NetworkTableEntry classSetterEntry;
     private static final NetworkTableEntry modeSetterEntry;
     private static final NetworkTableEntry rawEntry;
+    private static final NetworkTableEntry isInitializedEntry;
 
     private static final NetworkTableEntry currentModeEntry;
     private static final NetworkTable profiling;
@@ -38,6 +39,7 @@ class NT4Interface {
         rawEntry = table.getEntry("Raw");
         currentModeEntry = table.getEntry("CurrentMode");
         profiling = table.getSubTable("Profiling");
+        isInitializedEntry = table.getEntry("IsInitialized");
     }
 
     static void initialize() {
@@ -50,6 +52,10 @@ class NT4Interface {
 
     static void setProfilingTime(String key, double time){
         profiling.getEntry(key).setDouble(time);
+    }
+
+    static void setInitialized(boolean initialized){
+        isInitializedEntry.setBoolean(initialized);
     }
 
     static String getSetKeys(){
@@ -126,7 +132,7 @@ class NT4Interface {
         paramsEntry.setString(params.toString());
     }
 
-    static void updateRaw(YamlMapping raw){
+    static void updateRaw(String raw){
         String timestamp = String.valueOf(new Date().getTime());
         rawEntry.setString(timestamp + "," + raw);
     }

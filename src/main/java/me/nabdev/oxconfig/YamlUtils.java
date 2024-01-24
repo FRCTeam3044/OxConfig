@@ -6,11 +6,14 @@ import com.amihaiemil.eoyaml.YamlMappingBuilder;
 import com.amihaiemil.eoyaml.extensions.MergedYamlMapping;
 
 import static me.nabdev.oxconfig.OxConfig.config;
+import static me.nabdev.oxconfig.OxConfig.configString;
 
 /**
  * A helper class for interfacing with eo-yaml
  */
 class YamlUtils {
+
+    private static boolean dirty = false;
 
     /**
      * Get the YamlMapping for the given mode
@@ -26,10 +29,10 @@ class YamlUtils {
      * @param mode The default mode to use if the key does not exist
      */
     static void ensureModeExists(String mode) {
-        Logger.logInfo("Ensuring mode key exists with default of " + mode);
         if(config.string("mode") == null){
             Logger.logInfo("Mode key does not exist, creating");
             config = new MergedYamlMapping(config, Yaml.createYamlMappingBuilder().add("mode", mode).build(), true);
+            configString = config.toString();
         }
     }
 
@@ -39,6 +42,7 @@ class YamlUtils {
      */
     static void modifyMode(String mode) {
         config = new MergedYamlMapping(config, Yaml.createYamlMappingBuilder().add("mode", mode).build(), true);
+        configString = config.toString();
     }
 
     /**
@@ -63,6 +67,17 @@ class YamlUtils {
     }
 
     /**
+     * Updates the config string to make sure its up to date
+     */
+    static void updateConfigStr(){
+        if(!dirty){
+            return;
+        }
+        dirty = false;
+        Logger.logInfo("Updating config string");
+        OxConfig.configString = config.toString();
+    }
+    /**
      * For internal use only
      * @param force Whether to force the key to be changed (toggle between ensure and modify)
      * @param key The key to ensure exists
@@ -75,13 +90,15 @@ class YamlUtils {
         if(!force && nested != null && nested.string(key) != null){
             return;
         }
-        OxConfig.hasModified = true;
-        OxConfig.pendingNTUpdate = true;
 
         YamlMappingBuilder newMap = Yaml.createYamlMappingBuilder();
         newMap = newMap.add(key, Yaml.createYamlScalarBuilder()
                 .addLine(defaultVal)
                 .buildPlainScalar(comment));
         config = new MergedYamlMapping(config, Yaml.createYamlMappingBuilder().add(mode, newMap.build()).build(), true);
+    
+        dirty = true;
+        OxConfig.hasModified = true;
+        OxConfig.pendingNTUpdate = true;
     }
 }
