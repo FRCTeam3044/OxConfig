@@ -304,6 +304,7 @@ public class OxConfig {
 
         if (key.equalsIgnoreCase("root/mode")) {
             if(shouldEnsure) YamlUtils.ensureModeExists(defaultVal);
+            // Don't write out simulation to config file when running in sim to avoid accidentally overwriting data
             if (!(RobotBase.isSimulation() && modeSelector.getMode().equals("simulation"))) {
                 setValue(configurable, key, config);
             }
@@ -401,6 +402,7 @@ public class OxConfig {
             Logger.logInfo("Mode set over NT to " + modeSet);
             YamlUtils.modifyMode(modeSet);
             reload();
+            // If running in simulation, set the mode selector manually, since we overwrote it before without writing out to the config file
             if(modeSelector != null && RobotBase.isSimulation() && modeSelector.getMode().equals("simulation")){
                 modeSelector.setMode(modeSet);
             }

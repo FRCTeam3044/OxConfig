@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  * Class for selecting the current mode of the robot.
  */
 class ModeSelector {
-    private String currentMode = "testing";
+    private String currentMode = "competition";
     private boolean hasInitialized = false;
     final ConfigurableParameter<String> modeParam = new ConfigurableParameter<>(modes[0], "root/mode", this::setMode);
 
