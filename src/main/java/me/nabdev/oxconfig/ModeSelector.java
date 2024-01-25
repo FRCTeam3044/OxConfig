@@ -19,8 +19,13 @@ class ModeSelector {
             "competition", "testing", "presentation", "simulation"
     };
 
-    // Should call reload in OxConfig
-    void setMode(String mode) {
+    /**
+     * Set the current OxConfig mode. Is not saved to the config file, and will be
+     * overwritten on code restart, file reload, or mode changed over nt.
+     * 
+     * @param mode The mode to switch to
+     */
+    public void setMode(String mode) {
         if (!hasInitialized) {
             hasInitialized = true;
             if (RobotBase.isSimulation()) {
