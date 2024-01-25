@@ -104,7 +104,7 @@ public class OxConfig {
     private static final String configPath = Filesystem.getDeployDirectory() + "/config.json";
     private static final int threadSleepTime = 75;
     private static EditMode editMode = EditMode.Unrestricted;
-    private static EnsureMode fastMode = EnsureMode.Startup;
+    private static EnsureMode ensureMode = EnsureMode.Startup;
     static LoggingMode loggingMode = LoggingMode.Warnings;
     static boolean isProfiling = false;
     static boolean prettyPrintJSON = true;
@@ -148,10 +148,10 @@ public class OxConfig {
      * @param mode The new ensure mode
      */
     public static void setEnsureMode(EnsureMode mode) {
-        fastMode = mode;
+        ensureMode = mode;
         if (mode == EnsureMode.Never)
             shouldEnsure = false;
-        Logger.logInfo("Fast mode set to " + mode.toString());
+        Logger.logInfo("Ensure mode set to " + mode.toString());
     }
 
     /**
@@ -234,7 +234,7 @@ public class OxConfig {
         }
         timer.logTime("WriteFile");
         hasInitialized = true;
-        if (fastMode == EnsureMode.Startup)
+        if (ensureMode == EnsureMode.Startup)
             shouldEnsure = false;
     }
 
@@ -306,6 +306,10 @@ public class OxConfig {
     public static void registerParameter(String key, ConfigurableParameter<?> parameter) {
         configValues.put(key, parameter);
         configurableParameters.put(key, parameter);
+        if (hasInitialized) {
+            shouldEnsure = ensureMode == EnsureMode.Never ? false : true;
+            reload();
+        }
     }
 
     /**
