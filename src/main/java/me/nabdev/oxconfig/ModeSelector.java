@@ -4,13 +4,11 @@ import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
-// Using a configurable class for now. May change later once individual parameter editing is implemented
-
 /**
  * Class for selecting the current mode of the robot.
  */
 class ModeSelector {
-    private String currentMode = "testing";
+    private String currentMode = "competition";
     private boolean hasInitialized = false;
     final ConfigurableParameter<String> modeParam = new ConfigurableParameter<>(modes[0], "root/mode", this::setMode);
 
@@ -21,8 +19,13 @@ class ModeSelector {
             "competition", "testing", "presentation", "simulation"
     };
 
-    // Should call reload in OxConfig
-    void setMode(String mode) {
+    /**
+     * Set the current OxConfig mode. Is not saved to the config file, and will be
+     * overwritten on code restart, file reload, or mode changed over nt.
+     * 
+     * @param mode The mode to switch to
+     */
+    public void setMode(String mode) {
         if (!hasInitialized) {
             hasInitialized = true;
             if (RobotBase.isSimulation()) {

@@ -1,24 +1,23 @@
 package me.nabdev.oxconfig;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import com.amihaiemil.eoyaml.Yaml;
-import com.amihaiemil.eoyaml.YamlMapping;
-import com.amihaiemil.eoyaml.YamlPrinter;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
- * A flexible, dynamic YAML based automatic configuration system for FRC robots
+ * A flexible, dynamic json based automatic configuration system for FRC robots
  */
-@SuppressWarnings("unused")
 public class OxConfig {
 
-    /** 
+    /**
      * Different modes for logging
      */
     public enum LoggingMode {
@@ -31,7 +30,7 @@ public class OxConfig {
          */
         Errors,
         /**
-         * Errors and warnings
+         * Errors and warnings, default
          */
         Warnings,
         /**
@@ -53,31 +52,35 @@ public class OxConfig {
          */
         FileOnly,
         /**
-         * Editing from the config file and NT Interface (AdvantageScope-3044) is allowed
+         * Editing from the config file and NT Interface (AdvantageScope-3044) is
+         * allowed, default
          */
         Unrestricted,
     }
 
     /**
-     * Different modes for speed
+     * Different modes for ensuring keys
      */
-    public enum FastMode {
+    public enum EnsureMode {
         /**
          * Default, Always ensures all keys exist, but is slower
          */
-        Safe,
+        Always,
         /**
-         * Faster, but can sometimes cause crashes when you edit the file directly and makes it less resistant to corruption
+         * Ensure keys only on startup. May be a little faster than AlwaysEnsure, and
+         * should be pretty safe. This is default.
          */
-        Fast,
+        Startup,
         /**
-         * (Not Recommended) Never ensures keys exist, do not use on the first run after adding a new parameter/class.
+         * (Not Recommended) Never ensures keys exist, do not use on the first run after
+         * adding a new parameter/class.
          */
-        FastStartup,
+        Never,
     }
 
     /* Config Mapping Declarations */
-    static YamlMapping config;
+    static JSONObject config;
+    static String configString;
     private static final HashMap<String, Configurable<?>> configValues = new HashMap<>();
     private static final HashMap<String, ConfigurableClass> configurableClasses = new HashMap<>();
     private static final HashMap<String, ConfigurableParameter<?>> configurableParameters = new HashMap<>();
@@ -98,18 +101,20 @@ public class OxConfig {
     static boolean pendingNTUpdate = false;
 
     /* Internal Parameter Declarations */
-    private static final String configPath = Filesystem.getDeployDirectory() + "/config.yml";
+    private static final String configPath = Filesystem.getDeployDirectory() + "/config.json";
     private static final int threadSleepTime = 75;
     private static EditMode editMode = EditMode.Unrestricted;
-    private static FastMode fastMode = FastMode.Safe;
+    private static EnsureMode fastMode = EnsureMode.Startup;
     static LoggingMode loggingMode = LoggingMode.Warnings;
     static boolean isProfiling = false;
+    static boolean prettyPrintJSON = true;
 
     /**
      * Set the edit mode of OxConfig
+     * 
      * @param mode The new edit mode
      */
-    public static void setEditMode(EditMode mode){
+    public static void setEditMode(EditMode mode) {
         editMode = mode;
         Logger.logInfo("Edit mode set to " + mode.toString());
     }
@@ -117,29 +122,44 @@ public class OxConfig {
     /**
      * Enable sending profiling values in ms to NetworkTables
      * (OxConfig/Profiling)
+     * 
      * @param nt Whether to send profiling values to NetworkTables
      */
-    public static void enableProfiling(boolean nt){
+    public static void enableProfiling(boolean nt) {
         isProfiling = true;
         TaskTimer.nt = nt;
         Logger.logInfo("Profiling enabled");
     }
 
     /**
-     * Add some speed at the cost of safety. Use at your own risk.
-     * @param mode The new fast mode
+     * Enable minification of the output json file. This could save a little
+     * storage or bandwidth and maybe go a little faster, but probably not much.
+     * 
      */
-    public static void setFastMode(FastMode mode){
+    public static void enableMinifyJSON() {
+        prettyPrintJSON = false;
+    }
+
+    /**
+     * Change the default ensure behavoir of OxConfig. If you are running into
+     * slowdowns or constant crashes due to missing keys, it may be worth trying
+     * this.
+     * 
+     * @param mode The new ensure mode
+     */
+    public static void setEnsureMode(EnsureMode mode) {
         fastMode = mode;
-        if(mode == FastMode.FastStartup) shouldEnsure = false;
+        if (mode == EnsureMode.Never)
+            shouldEnsure = false;
         Logger.logInfo("Fast mode set to " + mode.toString());
     }
 
     /**
      * Set the logging mode of OxConfig
+     * 
      * @param mode The new logging mode
      */
-    public static void setLoggingMode(LoggingMode mode){
+    public static void setLoggingMode(LoggingMode mode) {
         loggingMode = mode;
         Logger.logInfo("Logging mode set to " + mode.toString());
     }
@@ -147,15 +167,17 @@ public class OxConfig {
     /**
      * Initializes the config system, should be called in robotInit()
      */
-    public static void initialize(){
+    public static void initialize() {
         Thread name = new Thread(() -> {
             try {
                 initializedFromCode = true;
                 modeSelector = new ModeSelector();
-                if(editMode == EditMode.Unrestricted) NT4Interface.initialize();
+                if (editMode == EditMode.Unrestricted)
+                    NT4Interface.initialize();
                 reload();
-                System.out.println("[OxConfig] Initialization Complete");
-                if(editMode != EditMode.Unrestricted) return;
+                Logger.logInfo("OxConfig initialized successfully");
+                if (editMode != EditMode.Unrestricted)
+                    return;
                 while (!Thread.currentThread().isInterrupted()) {
                     runNTInterface();
                     Thread.sleep(threadSleepTime);
@@ -163,23 +185,28 @@ public class OxConfig {
             } catch (Exception e) {
                 Logger.logError("OxConfig ran into an issue, please report this to nab138: " + e.getMessage());
             }
-            });
+        });
         name.setName("OxConfig Handler");
-        name.setPriority(Thread.MIN_PRIORITY);
+        name.setPriority(3);
         name.start();
     }
 
     /**
-     * Sets the list of modes that OxConfig will store values for. If not called, defaults to Presentation, Competition, Testing, and Simulation.
-     * Simulation will be automatically added to the list of modes if not present. Call before OxConfig.initialize().
+     * Sets the list of modes that OxConfig will store values for. If not called,
+     * defaults to Presentation, Competition, Testing, and Simulation.
+     * Simulation will be automatically added to the list of modes if not present.
+     * Call before OxConfig.initialize().
+     * 
      * @param modes the new list of modes
      */
-    public static void setModeList(String... modes){
+    public static void setModeList(String... modes) {
         // Make sure simulation is in the list of modes and ensure all are lowercase
         ArrayList<String> modeList = new ArrayList<>();
-        for(String mode : modes){
-            if(mode.equalsIgnoreCase("simulation")) continue;
-            if(mode.contains(",")) throw new IllegalArgumentException("Mode names cannot contain commas");
+        for (String mode : modes) {
+            if (mode.equalsIgnoreCase("simulation"))
+                continue;
+            if (mode.contains(","))
+                throw new IllegalArgumentException("Mode names cannot contain commas");
             modeList.add(mode.toLowerCase());
         }
         modeList.add("simulation");
@@ -187,32 +214,36 @@ public class OxConfig {
     }
 
     /**
-     * Updates all the configurable parameters/configurable classes (NOT FROM FILE, use reloadFromDisk() instead)
+     * Updates all the configurable parameters/configurable classes (NOT FROM FILE,
+     * use reloadFromDisk() instead)
      */
-    public static void reload(){
-        if(!initializedFromCode) return;
+    public static void reload() {
+        if (!initializedFromCode)
+            return;
         TaskTimer timer = new TaskTimer();
-        if(!hasReadFromFile){
+        if (!hasReadFromFile) {
             reloadFromFile();
             hasReadFromFile = true;
         }
         timer.logTime("ReloadFile");
         reloadConfig();
         timer.logTime("ReloadConfig");
-        if(hasModified){
+        if (hasModified) {
             writeFiles();
             hasModified = false;
         }
         timer.logTime("WriteFile");
         hasInitialized = true;
-        if(fastMode == FastMode.Fast) shouldEnsure = false;
+        if (fastMode == EnsureMode.Startup)
+            shouldEnsure = false;
     }
 
     /**
-     * Reloads all values from the config file and updates the configurable parameters/configurable classes
+     * Reloads all values from the config file and updates the configurable
+     * parameters/configurable classes
      */
-    public static void reloadFromDisk(){
-        if(editMode == EditMode.Locked){
+    public static void reloadFromDisk() {
+        if (editMode == EditMode.Locked) {
             Logger.logWarning("Attempted to reload config from disk while in locked mode, ignoring");
             return;
         }
@@ -222,7 +253,7 @@ public class OxConfig {
         timer.logTime("ReloadFile");
         reloadConfig();
         timer.logTime("ReloadConfig");
-        if(hasModified){
+        if (hasModified) {
             writeFiles();
             hasModified = false;
         }
@@ -235,64 +266,79 @@ public class OxConfig {
      * this function will write out those autogenerated keys to a file
      */
     public static void writeFiles() {
+        TaskTimer writeTimer = new TaskTimer();
+        JsonUtils.updateConfigStr();
         try (FileWriter writer = new FileWriter(configPath)) {
-            final YamlPrinter printer = Yaml.createYamlPrinter(writer);
-            printer.print(config);
+            writer.write(configString);
+            writeTimer.logTime("PrintConfig");
             Logger.logInfo("Wrote out config file successfully");
         } catch (Exception e) {
-            Logger.logError("Failed to write out config file (you may need to change file permissions): " + e.getMessage());
+            Logger.logError(
+                    "Failed to write out config file (you may need to change file permissions): " + e.getMessage());
         }
     }
 
-
     /**
-     * Register a class to be automatically configured (should be called in configurable class constructor).
-     * This is automatically handled in ConfigurablePIDController and ConfigurableSparkPIDController.
+     * Register a class to be automatically configured (should be called in
+     * configurable class constructor).
+     * This is automatically handled in ConfigurablePIDController and
+     * ConfigurableSparkPIDController.
+     * 
      * @param configurableClass the class to register
      */
-    public static void registerConfigurableClass(ConfigurableClass configurableClass){
+    public static void registerConfigurableClass(ConfigurableClass configurableClass) {
         configurableClasses.put(configurableClass.getKey(), configurableClass);
         ArrayList<ConfigurableClassParam<?>> parameters = configurableClass.getParameters();
         parameters.forEach(parameter -> registerClassParameter(
-            parameter.getKey(),
-            parameter
-        ));
+                parameter.getKey(),
+                parameter));
     }
 
     /**
-     * Not for use by the user: 
-     * Sets up a config value to be automatically configured (Automatically handled by ConfigurableParameter)
-     * @param key the yaml key the value will be found under in config.yml (in deploy folder)
+     * Not for use by the user:
+     * Sets up a config value to be automatically configured (Automatically handled
+     * by ConfigurableParameter)
+     * 
+     * @param key       the json key the value will be found under in config.json
+     *                  (in deploy folder)
      * @param parameter the parameter to update
      */
-    public static void registerParameter(String key, ConfigurableParameter<?> parameter){
+    public static void registerParameter(String key, ConfigurableParameter<?> parameter) {
         configValues.put(key, parameter);
         configurableParameters.put(key, parameter);
     }
 
     /**
      * Not for use by the user:
-     * Sets up a configurable class param  automatically configured (Automatically handled by ConfigurableClassParam)
-     * @param key the yaml key the value will be found under in config.yml (in deploy folder)
+     * Sets up a configurable class param automatically configured (Automatically
+     * handled by ConfigurableClassParam)
+     * 
+     * @param key       the json key the value will be found under in config.json
+     *                  (in deploy folder)
      * @param parameter the parameter to update
      */
-    public static void registerClassParameter(String key, ConfigurableClassParam<?> parameter){
+    public static void registerClassParameter(String key, ConfigurableClassParam<?> parameter) {
         configValues.put(key, parameter);
     }
 
-    private static void reloadFromFile(){
+    private static void reloadFromFile() {
         try {
-            config = Yaml.createYamlInput(new File(configPath)).readYamlMapping();
+            // Load config json object from configPath
+            FileInputStream input = new FileInputStream(configPath);
+            JSONTokener tokener = new JSONTokener(input);
+            config = new JSONObject(tokener);
+            JsonUtils.dirty = true;
             pendingNTUpdate = true;
             Logger.logInfo("Reloaded config from file");
         } catch (Exception e) {
-            Logger.logError("Failed to read config file (ensure it exists in deploy folder under config.yml): " + e.getMessage());
+            Logger.logError("Failed to read config file (ensure it exists in deploy folder under config.json): "
+                    + e.getMessage());
         }
     }
 
-    private static void reloadConfig(){
+    private static void reloadConfig() {
         TaskTimer timer = new TaskTimer();
-        for(String key : configValues.keySet()){
+        for (String key : configValues.keySet()) {
             updateSingleKey(key);
             timer.logTime("ReloadSingleKey");
         }
@@ -303,46 +349,49 @@ public class OxConfig {
         String defaultVal = configurable.get().toString();
 
         if (key.equalsIgnoreCase("root/mode")) {
-            if(shouldEnsure) YamlUtils.ensureModeExists(defaultVal);
+            if (shouldEnsure)
+                JsonUtils.ensureModeExists(defaultVal);
+            // Don't write out simulation to config file when running in sim to avoid
+            // accidentally overwriting data
             if (!(RobotBase.isSimulation() && modeSelector.getMode().equals("simulation"))) {
-                setValue(configurable, key, config);
+                setValue(configurable, "mode", config);
             }
         } else {
             if (shouldEnsure) {
                 for (String mode : ModeSelector.modes) {
-                    YamlUtils.ensureExists(mode, key, defaultVal);
+                    JsonUtils.ensureExists(mode, key, defaultVal, configurable.shouldStoreComment());
                 }
             }
-            setValue(configurable, key, YamlUtils.getModeMap(modeSelector.getMode()));
+            setValue(configurable, key, JsonUtils.getModeMap(modeSelector.getMode()));
         }
     }
 
-
     @SuppressWarnings("unchecked")
-    private static void setValue(Configurable<?> obj, String key, YamlMapping map) {
+    private static void setValue(Configurable<?> obj, String key, JSONObject map) {
         Object value = obj.get();
+        String val = JsonUtils.getRealValue(map, key, obj.shouldStoreComment());
         try {
             switch (value.getClass().getSimpleName()) {
                 case "Double":
-                    ((Configurable<Double>) obj).set(map.doubleNumber(key));
+                    ((Configurable<Double>) obj).set(Double.valueOf(val));
                     break;
                 case "Float":
-                    ((Configurable<Float>) obj).set(map.floatNumber(key));
+                    ((Configurable<Float>) obj).set(Float.valueOf(val));
                     break;
                 case "Integer":
-                    ((Configurable<Integer>) obj).set(map.integer(key));
+                    ((Configurable<Integer>) obj).set(Integer.valueOf(val));
                     break;
                 case "Boolean":
-                    ((Configurable<Boolean>) obj).set(Boolean.valueOf(map.string(key)));
+                    ((Configurable<Boolean>) obj).set(Boolean.valueOf(val));
                     break;
                 case "String":
-                    ((Configurable<String>) obj).set(String.valueOf(map.string(key)));
+                    ((Configurable<String>) obj).set(String.valueOf(val));
                     break;
                 case "Short":
-                    ((Configurable<Short>) obj).set(Short.valueOf(map.string(key)));
+                    ((Configurable<Short>) obj).set(Short.valueOf(val));
                     break;
                 case "Long":
-                    ((Configurable<Long>) obj).set(map.longNumber(key));
+                    ((Configurable<Long>) obj).set(Long.valueOf(val));
                     break;
                 default:
                     Logger.logWarning("Unknown Type for key " + key + ": " + value.getClass().getName());
@@ -353,27 +402,27 @@ public class OxConfig {
         }
     }
 
-
-
     /**
-     * Reading/writing the config over NetworkTables, used for the tuning and config GUI's built in to our modified advantage scope.
-     * OxConfig can be run without this if you aren't interested in these features. Designed to be run in periodic.
+     * Reading/writing the config over NetworkTables, used for the tuning and config
+     * GUI's built in to our modified advantage scope.
      */
-    public static void runNTInterface(){
-        if(!NT4Interface.hasInitialized) return;
-        if(editMode != EditMode.Unrestricted) return;
+    private static void runNTInterface() {
+        if (!NT4Interface.hasInitialized)
+            return;
+        if (editMode != EditMode.Unrestricted)
+            return;
         TaskTimer timer = new TaskTimer();
         handleKeySetter();
-        if(pendingNTUpdate){
+        if (pendingNTUpdate) {
             pendingNTUpdate = false;
-            timer.reset();
             NT4Interface.updateClasses(configurableClasses);
             timer.logTime("NT Update Classes");
             NT4Interface.updateParameters(configurableParameters);
             timer.logTime("NT Update Parameters");
             NT4Interface.updateMode();
             timer.logTime("NT Update Mode");
-            NT4Interface.updateRaw(config);
+            JsonUtils.updateConfigStr();
+            NT4Interface.updateRaw(configString);
             timer.logTime("NT Update Raw");
         }
     }
@@ -381,35 +430,37 @@ public class OxConfig {
     /**
      * Read the KeySetter and ModeSetter from NT to set
      */
-    private static void handleKeySetter(){
+    private static void handleKeySetter() {
         String keySetRaw = NT4Interface.getSetKeys();
-        if(!keySetRaw.isEmpty()){
+        if (!keySetRaw.isEmpty()) {
             TaskTimer timer = new TaskTimer();
             String[] keySet = keySetRaw.split(",");
             Logger.logInfo("Received NT update for key " + keySet[0]);
-            for(int i = 0; i < ModeSelector.modes.length; i++){
+            for (int i = 0; i < ModeSelector.modes.length; i++) {
                 String mode = ModeSelector.modes[i];
                 String key = keySet[0];
-                YamlUtils.modifyValue(mode, key, keySet[2 + i], keySet[1]);
+                JsonUtils.modifyValue(mode, key, keySet[2 + i], keySet[1]);
             }
             updateSingleKey(keySet[0]);
             timer.logTime("NT Key Setter");
         }
 
         String modeSet = NT4Interface.getSetModes();
-        if(Arrays.asList(ModeSelector.modes).contains(modeSet)){
+        if (Arrays.asList(ModeSelector.modes).contains(modeSet)) {
             Logger.logInfo("Mode set over NT to " + modeSet);
-            YamlUtils.modifyMode(modeSet);
+            JsonUtils.modifyMode(modeSet);
             reload();
-            if(modeSelector != null && RobotBase.isSimulation() && modeSelector.getMode().equals("simulation")){
+            // If running in simulation, set the mode selector manually, since we overwrote
+            // it before without writing out to the config file
+            if (modeSelector != null && RobotBase.isSimulation() && modeSelector.getMode().equals("simulation")) {
                 modeSelector.setMode(modeSet);
             }
-        } else if (!modeSet.isEmpty()){
+        } else if (!modeSet.isEmpty()) {
             Logger.logWarning("Invalid mode set over NT: " + modeSet);
         }
 
         String classSet = NT4Interface.getSetClasses();
-        if(!classSet.isEmpty()){
+        if (!classSet.isEmpty()) {
             String[] keySet = classSet.split(",");
             String classSetType = keySet[0];
             Logger.logInfo("Received NT update for class " + keySet[1]);
@@ -421,7 +472,7 @@ public class OxConfig {
                         Logger.logWarning("Invalid mode for class set over NT: " + mode);
                         return;
                     }
-                    YamlUtils.modifyValue(mode, key, keySet[3], "Modified by Tuner");
+                    JsonUtils.modifyValue(mode, key, keySet[3]);
                     updateSingleKey(key);
                     break;
                 }
@@ -430,8 +481,9 @@ public class OxConfig {
                     String sourceMode = keySet[2];
                     String destMode = keySet[3];
 
-                    // Copy all values from source mode for the class key to dest mode for the class key
-                    YamlMapping source = YamlUtils.getModeMap(sourceMode);
+                    // Copy all values from source mode for the class key to dest mode for the class
+                    // key
+                    JSONObject source = JsonUtils.getModeMap(sourceMode);
 
                     ConfigurableClass classObj = configurableClasses.get(key);
                     if (classObj == null) {
@@ -446,7 +498,7 @@ public class OxConfig {
                     String key = keySet[1];
                     String sourceMode = keySet[2];
 
-                    YamlMapping source = YamlUtils.getModeMap(sourceMode);
+                    JSONObject source = JsonUtils.getModeMap(sourceMode);
 
                     ConfigurableClass classObj = configurableClasses.get(key);
                     if (classObj == null) {
@@ -455,16 +507,17 @@ public class OxConfig {
                     }
 
                     for (String mode : ModeSelector.modes) {
-                        if (mode.equals(sourceMode)) continue;
+                        if (mode.equals(sourceMode))
+                            continue;
                         updateOneClass(sourceMode, source, classObj, mode);
                     }
 
                     break;
                 }
             }
-            
+
         }
-        if(hasModified){
+        if (hasModified) {
             TaskTimer timer = new TaskTimer();
             writeFiles();
             hasModified = false;
@@ -473,15 +526,16 @@ public class OxConfig {
 
     }
 
-    private static void updateOneClass(String sourceMode, YamlMapping source, ConfigurableClass classObj, String mode) {
-        for(ConfigurableClassParam<?> param : classObj.getParameters()){
+    private static void updateOneClass(String sourceMode, JSONObject source, ConfigurableClass classObj, String mode) {
+        for (ConfigurableClassParam<?> param : classObj.getParameters()) {
             String paramKey = param.getKey();
-            String sourceVal = source.string(paramKey);
-            if(sourceVal == null) continue;
-            YamlUtils.modifyValue(mode, paramKey, sourceVal, ("Modified by Tuner (Copied from " + sourceMode + ")"));
+            if (!source.has(paramKey)) {
+                continue;
+            }
+            String sourceVal = JsonUtils.getRealValue(source, paramKey, param.shouldStoreComment());
+            JsonUtils.modifyValue(mode, paramKey, sourceVal);
             updateSingleKey(paramKey);
         }
     }
 
 }
- 

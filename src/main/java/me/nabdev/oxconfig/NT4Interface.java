@@ -5,8 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.json.JSONArray;
-
-import com.amihaiemil.eoyaml.YamlMapping;
+import org.json.JSONObject;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -48,53 +47,52 @@ class NT4Interface {
         modesEntry.setString(String.join(",", ModeSelector.modes));
     }
 
-    static void setProfilingTime(String key, double time){
+    static void setProfilingTime(String key, double time) {
         profiling.getEntry(key).setDouble(time);
     }
 
-    static String getSetKeys(){
+    static String getSetKeys() {
         String key = keySetterEntry.getString("");
-        if(!key.isEmpty()){
+        if (!key.isEmpty()) {
             keySetterEntry.setString("");
         }
         return key;
     }
 
-    static String getSetClasses(){
+    static String getSetClasses() {
         String key = classSetterEntry.getString("");
-        if(!key.isEmpty()){
+        if (!key.isEmpty()) {
             classSetterEntry.setString("");
         }
         return key;
     }
 
-
-    static String getSetModes(){
+    static String getSetModes() {
         String mode = modeSetterEntry.getString("");
-        if(!mode.isEmpty()){
+        if (!mode.isEmpty()) {
             modeSetterEntry.setString("");
         }
         return mode;
     }
 
-    static void updateClasses(HashMap<String, ConfigurableClass> configurableClasses){
+    static void updateClasses(HashMap<String, ConfigurableClass> configurableClasses) {
         JSONArray classes = new JSONArray();
-        for(String configClassKey : configurableClasses.keySet()){
+        for (String configClassKey : configurableClasses.keySet()) {
             JSONArray classArr = new JSONArray();
             ConfigurableClass configClass = configurableClasses.get(configClassKey);
             classArr.put(configClass.getPrettyName());
             classArr.put(configClassKey);
 
             ArrayList<ConfigurableClassParam<?>> parameters = configClass.getParameters();
-            for(ConfigurableClassParam<?> param : parameters){
+            for (ConfigurableClassParam<?> param : parameters) {
                 JSONArray paramArr = new JSONArray();
                 paramArr.put(param.getPrettyName());
                 String key = param.getKey();
                 paramArr.put(key);
                 paramArr.put(param.get().getClass().getSimpleName());
-                for(String mode : ModeSelector.modes){
-                    YamlMapping curModeMap = YamlUtils.getModeMap(mode);
-                    paramArr.put(curModeMap.string(key));
+                for (String mode : ModeSelector.modes) {
+                    JSONObject curModeMap = JsonUtils.getModeMap(mode);
+                    paramArr.put(JsonUtils.getRealValue(curModeMap, key, param.shouldStoreComment()));
                 }
                 classArr.put(paramArr);
             }
@@ -103,35 +101,37 @@ class NT4Interface {
         table.getEntry("Classes").setString(classes.toString());
     }
 
-    static void updateParameters(HashMap<String, ConfigurableParameter<?>> parameters){
+    static void updateParameters(HashMap<String, ConfigurableParameter<?>> parameters) {
         JSONArray params = new JSONArray();
-        for(String paramKey : parameters.keySet()){
-            if(paramKey.equalsIgnoreCase("root/mode")){
+        for (String paramKey : parameters.keySet()) {
+            if (paramKey.equalsIgnoreCase("root/mode")) {
                 continue;
             }
             JSONArray paramArr = new JSONArray();
             ConfigurableParameter<?> param = parameters.get(paramKey);
             paramArr.put(paramKey);
 
-            YamlMapping nested = YamlUtils.getModeMap(OxConfig.modeSelector.getMode());
-            paramArr.put(nested.value(paramKey).comment().value());
+            // The comment should be the same for all modes. Just pick one, doesn't matter.
+            JSONObject nested = JsonUtils.getModeMap(OxConfig.modeSelector.getMode());
+            JSONObject data = JsonUtils.getJSONObject(nested, paramKey);
+            paramArr.put(data.getString("comment"));
             // Put the type of the parameter
             paramArr.put(param.get().getClass().getSimpleName());
-            for(String mode : ModeSelector.modes){
-                YamlMapping curModeNested = YamlUtils.getModeMap(mode);
-                paramArr.put(curModeNested.string(paramKey));
+            for (String mode : ModeSelector.modes) {
+                JSONObject curModeNested = JsonUtils.getModeMap(mode);
+                paramArr.put(JsonUtils.getRealValue(curModeNested, paramKey, param.shouldStoreComment()));
             }
             params.put(paramArr);
         }
         paramsEntry.setString(params.toString());
     }
 
-    static void updateRaw(YamlMapping raw){
+    static void updateRaw(String raw) {
         String timestamp = String.valueOf(new Date().getTime());
         rawEntry.setString(timestamp + "," + raw);
     }
 
-    static void updateMode(){
+    static void updateMode() {
         currentModeEntry.setString(OxConfig.modeSelector.getMode());
     }
 }

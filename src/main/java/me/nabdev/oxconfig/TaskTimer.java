@@ -5,21 +5,26 @@ class TaskTimer {
 
     private long lastCallTime;
 
-    public TaskTimer(){
-        if(!OxConfig.isProfiling) return;
+    public TaskTimer() {
+        if (!OxConfig.isProfiling)
+            return;
         lastCallTime = System.currentTimeMillis();
     }
 
     public void logTime(String key) {
-        if(!OxConfig.isProfiling) return;
+        if (!OxConfig.isProfiling)
+            return;
         long cur = System.currentTimeMillis();
-        if(nt) NT4Interface.setProfilingTime(key, (double)(cur - lastCallTime));
-        else System.out.println(key + ": " + (cur - lastCallTime));
+        if (nt)
+            NT4Interface.setProfilingTime(key, (double) (cur - lastCallTime));
+        else
+            System.out.println(key + ": " + (cur - lastCallTime));
         lastCallTime = cur;
     }
 
-    public void reset(){
-        if(!OxConfig.isProfiling) return;
+    public void reset() {
+        if (!OxConfig.isProfiling)
+            return;
         lastCallTime = System.currentTimeMillis();
     }
 }

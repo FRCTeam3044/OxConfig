@@ -11,16 +11,22 @@ import java.util.ArrayList;
 public interface ConfigurableClass {
     /**
      * Gets the parameters of the configurable class
+     * 
      * @return The parameters of the configurable class
      */
     ArrayList<ConfigurableClassParam<?>> getParameters();
+
     /**
-     * Gets the key of the configurable class (e.g. "leftWheelSpeed"), must not include commas
+     * Gets the key of the configurable class (e.g. "leftWheelSpeed"), must not
+     * include commas
+     * 
      * @return The key of the configurable class
      */
     String getKey();
+
     /**
      * Gets the pretty name of the configurable class (e.g. "Arm")
+     * 
      * @return The pretty name of the configurable class
      */
     String getPrettyName();

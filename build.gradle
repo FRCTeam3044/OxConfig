@@ -1,17 +1,17 @@
 plugins {
     id 'java-library'
-    id "edu.wpi.first.GradleRIO" version "2024.1.1"
+    id "edu.wpi.first.GradleRIO" version "2024.2.1"
     id 'maven-publish'
 }
 
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 group 'me.nabdev.oxconfig'
-version '1.0.4-SNAPSHOT'
+version '1.2.1-SNAPSHOT'
 
 java {
-    withSourcesJar()
-    withJavadocJar()
+  withSourcesJar()
+  withJavadocJar()
 }
 
 repositories {
@@ -27,11 +27,9 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 
     implementation 'org.json:json:20230227'
-    implementation group: 'com.amihaiemil.web', name: 'eo-yaml', version: '7.0.6'
     implementation 'edu.wpi.first.wpilibj:wpilibj-java:2024.+'
     implementation 'edu.wpi.first.wpimath:wpimath-java:2024.+'
     implementation 'edu.wpi.first.ntcore:ntcore-java:2024.+'
-
 }
 
 test {

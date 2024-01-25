@@ -10,7 +10,8 @@ import me.nabdev.oxconfig.OxConfig;
 
 /**
  * A WPILib PIDController that can be configured by OxConfig.
- * This class is an example of implementing ConfigurableClass, but is safe for competition use.
+ * This class is an example of implementing ConfigurableClass, but is safe for
+ * competition use.
  */
 public class ConfigurablePIDController extends PIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
@@ -21,13 +22,14 @@ public class ConfigurablePIDController extends PIDController implements Configur
     private final ArrayList<ConfigurableClassParam<?>> params = new ArrayList<>();
 
     /**
-     * Allocates a ConfigurablePIDController and registers it to OxConfig with the given constants for kp, ki, and kd and a default period of
+     * Allocates a ConfigurablePIDController and registers it to OxConfig with the
+     * given constants for kp, ki, and kd and a default period of
      * 0.02 seconds.
      *
-     * @param kp The proportional coefficient.
-     * @param ki The integral coefficient.
-     * @param kd The derivative coefficient.
-     * @param key The yaml key for the controller to be stored in
+     * @param kp  The proportional coefficient.
+     * @param ki  The integral coefficient.
+     * @param kd  The derivative coefficient.
+     * @param key The json key for the controller to be stored in
      */
     public ConfigurablePIDController(double kp, double ki, double kd, String key) {
         super(kp, ki, kd);
@@ -35,15 +37,15 @@ public class ConfigurablePIDController extends PIDController implements Configur
         initialize(kp, ki, kd, key, keys[keys.length - 1]);
     }
 
-
     /**
-     * Allocates a ConfigurablePIDController and registers it to OxConfig with the given constants for kp, ki, and kd and a default period of
+     * Allocates a ConfigurablePIDController and registers it to OxConfig with the
+     * given constants for kp, ki, and kd and a default period of
      * 0.02 seconds.
      *
-     * @param kp The proportional coefficient.
-     * @param ki The integral coefficient.
-     * @param kd The derivative coefficient.
-     * @param key The yaml key for the controller to be stored in
+     * @param kp         The proportional coefficient.
+     * @param ki         The integral coefficient.
+     * @param kd         The derivative coefficient.
+     * @param key        The json key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
     public ConfigurablePIDController(double kp, double ki, double kd, String key, String prettyName) {
@@ -51,7 +53,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
         initialize(kp, ki, kd, key, prettyName);
     }
 
-    private void initialize(double kp, double ki, double kd, String key, String prettyName){
+    private void initialize(double kp, double ki, double kd, String key, String prettyName) {
         this.key = key;
         this.prettyName = prettyName;
         kpParam = new ConfigurableClassParam<>(this, kp, this::setP, "P");
@@ -72,7 +74,7 @@ public class ConfigurablePIDController extends PIDController implements Configur
     }
 
     @Override
-    public String getPrettyName(){
+    public String getPrettyName() {
         return prettyName;
     }
 }

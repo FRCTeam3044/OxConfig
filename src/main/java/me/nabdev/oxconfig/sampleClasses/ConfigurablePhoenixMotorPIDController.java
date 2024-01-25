@@ -11,9 +11,9 @@ import me.nabdev.oxconfig.OxConfig;
 
 /**
  * A configurable Talon SRX or Victor SPX PID controller.
- * This class is an example of how to use the ConfigurableClass interface, but is safe for competition use.
+ * This class is an example of how to use the ConfigurableClass interface, but
+ * is safe for competition use.
  */
-
 public class ConfigurablePhoenixMotorPIDController implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
     private ConfigurableClassParam<Double> kiParam;
@@ -32,7 +32,7 @@ public class ConfigurablePhoenixMotorPIDController implements ConfigurableClass 
      * Sets up a Talon SRX PID controller to be autoconfigured.
      *
      * @param controller The Talon SRX motor controller to be configured
-     * @param key        The yaml key for the controller to be stored in
+     * @param key        The json key for the controller to be stored in
      */
     public ConfigurablePhoenixMotorPIDController(BaseMotorController controller, String key) {
         String[] keys = key.split("/");
@@ -43,7 +43,7 @@ public class ConfigurablePhoenixMotorPIDController implements ConfigurableClass 
      * Sets up a Talon SRX PID controller to be autoconfigured.
      *
      * @param controller The Talon SRX motor controller to be configured
-     * @param key        The yaml key for the controller to be stored in
+     * @param key        The json key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
     public ConfigurablePhoenixMotorPIDController(BaseMotorController controller, String key, String prettyName) {
