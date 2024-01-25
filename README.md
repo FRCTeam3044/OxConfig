@@ -3,26 +3,16 @@
 A modular and flexible utility for automatically setting up a JSON based config
 file and tuning over NetworkTables.
 
-_Developed by [nab138](https://github.com/nab138), this version is intended for
-use by FIRST teams using WPILib (not endorsed by WPI). A standard java version
-that doesn't depend on WPIlib will be coming soon (maybe)._
-
-**This is a pre-release version and has not been officially tested. User
-beware.**
+Developed by [nab138](https://github.com/nab138). This version is intended for
+use by FIRST teams using java WPILib (not endorsed by WPI).
 
 Inteded for use with
 [AdvantageScope-3044](https://github.com/FRCTeam3044/AdvantageScope-3044/) for
 tuning and editng values live. OxConfig can run without it, but it is not
 recommended.
 
-Questions, suggestions, bug reports, or just want to chat? **Join the
-[3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support,
-discussion, and more!**
-
-Check out our
-[slideshow](https://docs.google.com/presentation/d/1QuVK_aaOHk0eIedKAgRVHNj8FFaLIJ0PjUWnntIh-NE/edit?usp=sharing)
+Check out our [slideshow](https://docs.google.com/presentation/d/1QuVK_aaOHk0eIedKAgRVHNj8FFaLIJ0PjUWnntIh-NE/edit?usp=sharing)
 for an intro to OxConfig.
-
 
 ## Getting Started
 
@@ -55,3 +45,7 @@ After adding the repo, add the following to dependencies in your build.grade:
 - [allwpilib](https://github.com/wpilibsuite/allwpilib)
 - [REV Lib](https://docs.revrobotics.com/sparkmax/software-resources/spark-max-api-information)
 - [CTRE Lib](https://pro.docs.ctr-electronics.com/en/latest/)
+
+Questions, suggestions, bug reports, or just want to chat? **Join the
+[3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support,
+discussion, and more!**
