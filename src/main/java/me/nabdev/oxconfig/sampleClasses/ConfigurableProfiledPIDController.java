@@ -28,9 +28,9 @@ public class ConfigurableProfiledPIDController extends ProfiledPIDController imp
      * seconds. Unfortunatley, OxConfig is unable to configure the constraints, as
      * they cannot be changed.
      *
-     * @param kp          The proportional coefficient.
-     * @param ki          The integral coefficient.
-     * @param kd          The derivative coefficient.
+     * @param Kp          The proportional coefficient.
+     * @param Ki          The integral coefficient.
+     * @param Kd          The derivative coefficient.
      * @param constraints Velocity and acceleration constraints for goal.
      * @param key         The json key for the controller to be stored in
      */
@@ -46,9 +46,9 @@ public class ConfigurableProfiledPIDController extends ProfiledPIDController imp
      * seconds. Unfortunatley, OxConfig is unable to configure the constraints, as
      * they cannot be changed.
      *
-     * @param kp          The proportional coefficient.
-     * @param ki          The integral coefficient.
-     * @param kd          The derivative coefficient.
+     * @param Kp          The proportional coefficient.
+     * @param Ki          The integral coefficient.
+     * @param Kd          The derivative coefficient.
      * @param constraints Velocity and acceleration constraints for goal.
      * @param key         The json key for the controller to be stored in
      * @param prettyName  The name to be displayed in the OxConfig GUI
