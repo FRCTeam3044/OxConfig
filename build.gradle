@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'me.nabdev.oxconfig'
-version '1.2.3-SNAPSHOT'
+version '1.2.4-SNAPSHOT2'
 
 java {
   sourceCompatibility = '1.11'
@@ -27,9 +27,6 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 
     implementation 'org.json:json:20230227'
-    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2024.+'
-    implementation 'edu.wpi.first.wpimath:wpimath-java:2024.+'
-    implementation 'edu.wpi.first.ntcore:ntcore-java:2024.+'
 }
 
 test {

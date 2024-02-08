@@ -309,6 +309,7 @@ public class OxConfig {
         if (hasInitialized) {
             shouldEnsure = ensureMode == EnsureMode.Never ? false : true;
             reload();
+            pendingNTUpdate = true;
         }
     }
 
