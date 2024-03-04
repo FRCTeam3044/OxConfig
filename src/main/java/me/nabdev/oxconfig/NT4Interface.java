@@ -114,6 +114,9 @@ class NT4Interface {
             // The comment should be the same for all modes. Just pick one, doesn't matter.
             JSONObject nested = JsonUtils.getModeMap(OxConfig.modeSelector.getMode());
             JSONObject data = JsonUtils.getJSONObject(nested, paramKey);
+            if (!data.has("comment")) {
+                System.out.println(paramKey);
+            }
             paramArr.put(data.getString("comment"));
             // Put the type of the parameter
             paramArr.put(param.get().getClass().getSimpleName());
