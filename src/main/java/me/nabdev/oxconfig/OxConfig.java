@@ -184,6 +184,7 @@ public class OxConfig {
                 }
             } catch (Exception e) {
                 Logger.logError("OxConfig ran into an issue, please report this to nab138: " + e.getMessage());
+                e.printStackTrace();
             }
         });
         name.setName("OxConfig Handler");
