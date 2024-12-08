@@ -3,6 +3,9 @@ package me.nabdev.oxconfig.sampleClasses;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.ClosedLoopConfigAccessor;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -38,12 +41,14 @@ public class ConfigureableSparkClosedLoop implements ConfigurableClass {
      * Sets up a spark max PID controller to be autoconfigured.
      * If you would like to use default values, set them before creating this
      * 
-     * @param config   The config object for the controller
-     * @param accessor The accessor for the config object
-     * @param key      The json key for the controller to be stored in
+     * @param config     The config object for the controller
+     * @param accessor   The accessor for the config object
+     * @param controller The controller to be configured
+     * @param key        The json key for the controller to be stored in
      */
-    public ConfigureableSparkClosedLoop(SparkBaseConfig config, SparkBaseConfigAccessor accessor, String key) {
-        initialize(config, accessor, key, key);
+    public ConfigureableSparkClosedLoop(SparkBaseConfig config, SparkBaseConfigAccessor accessor, SparkBase controller,
+            String key) {
+        initialize(config, accessor, controller, key, key);
     }
 
     /**
@@ -52,12 +57,13 @@ public class ConfigureableSparkClosedLoop implements ConfigurableClass {
      * 
      * @param config     The config object for the controller
      * @param accessor   The accessor for the config object
+     * @param controller The controller to be configured
      * @param key        The json key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
-    public ConfigureableSparkClosedLoop(SparkBaseConfig config, SparkBaseConfigAccessor accessor, String key,
-            String prettyName) {
-        initialize(config, accessor, key, prettyName);
+    public ConfigureableSparkClosedLoop(SparkBaseConfig config, SparkBaseConfigAccessor accessor, SparkBase controller,
+            String key, String prettyName) {
+        initialize(config, accessor, controller, key, prettyName);
     }
 
     /**
@@ -65,10 +71,11 @@ public class ConfigureableSparkClosedLoop implements ConfigurableClass {
      * 
      * @param config     The spark config object for the controller
      * @param accessor   The accessor for the spark config object
+     * @param controller The controller to be configured
      * @param key        The json key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
-    private void initialize(SparkBaseConfig config, SparkBaseConfigAccessor accessor, String key,
+    private void initialize(SparkBaseConfig config, SparkBaseConfigAccessor accessor, SparkBase controller, String key,
             String prettyName) {
         this.key = key;
         this.prettyName = prettyName;
@@ -77,13 +84,34 @@ public class ConfigureableSparkClosedLoop implements ConfigurableClass {
 
         ClosedLoopConfigAccessor closedLoop = accessor.closedLoop;
 
-        kpParam = new ConfigurableClassParam<>(this, closedLoop.getP(), myConfig::p, "P");
-        kiParam = new ConfigurableClassParam<>(this, closedLoop.getI(), myConfig::i, "I");
-        kdParam = new ConfigurableClassParam<>(this, closedLoop.getD(), myConfig::d, "D");
-        iZoneParam = new ConfigurableClassParam<>(this, closedLoop.getIZone(), myConfig::iZone, "IZone");
-        FFParam = new ConfigurableClassParam<>(this, closedLoop.getFF(), myConfig::velocityFF, "FF");
-        minParam = new ConfigurableClassParam<>(this, closedLoop.getMinOutput(), myConfig::minOutput, "Min");
-        maxParam = new ConfigurableClassParam<>(this, closedLoop.getMaxOutput(), myConfig::maxOutput, "Max");
+        kpParam = new ConfigurableClassParam<>(this, closedLoop.getP(), (Double val) -> {
+            myConfig.p(val);
+            controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }, "P");
+        kiParam = new ConfigurableClassParam<>(this, closedLoop.getI(), (Double val) -> {
+            myConfig.i(val);
+            controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }, "I");
+        kdParam = new ConfigurableClassParam<>(this, closedLoop.getD(), (Double val) -> {
+            myConfig.d(val);
+            controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }, "D");
+        iZoneParam = new ConfigurableClassParam<>(this, closedLoop.getIZone(), (Double val) -> {
+            myConfig.iZone(val);
+            controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }, "IZone");
+        FFParam = new ConfigurableClassParam<>(this, closedLoop.getFF(), (Double val) -> {
+            myConfig.velocityFF(val);
+            controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }, "FF");
+        minParam = new ConfigurableClassParam<>(this, closedLoop.getMinOutput(), (Double val) -> {
+            myConfig.minOutput(val);
+            controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }, "Min");
+        maxParam = new ConfigurableClassParam<>(this, closedLoop.getMaxOutput(), (Double val) -> {
+            myConfig.maxOutput(val);
+            controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }, "Max");
 
         Collections.addAll(params, kpParam, kiParam, kdParam, iZoneParam, FFParam, minParam, maxParam);
         OxConfig.registerConfigurableClass(this);
