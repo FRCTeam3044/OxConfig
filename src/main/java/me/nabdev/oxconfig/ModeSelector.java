@@ -16,7 +16,7 @@ class ModeSelector {
      * Valid modes for the robot
      */
     public static String[] modes = {
-            "competition", "testing", "presentation", "simulation"
+            "competition", "presentation", "simulation"
     };
 
     /**

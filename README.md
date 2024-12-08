@@ -7,7 +7,7 @@ Developed by [nab138](https://github.com/nab138). This version is intended for
 use by FIRST teams using java WPILib (not endorsed by WPI).
 
 Inteded for use with
-[AdvantageScope-3044](https://github.com/FRCTeam3044/AdvantageScope-3044/) for
+[Shrinkwrap](https://github.com/nab138/shrinkwrap/) for
 tuning and editng values live. OxConfig can run without it, but it is not
 recommended.
 
@@ -37,7 +37,7 @@ maven {
 ```
 
 After adding the repo, add the following to dependencies in your build.grade:
-`implementation 'me.nabdev.oxconfig:oxconfig-wpi:1.2.4-SNAPSHOT'`
+`implementation 'me.nabdev.oxconfig:oxconfig-wpi:1.2.6'`
 
 ## Links
 

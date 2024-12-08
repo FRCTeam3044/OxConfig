@@ -194,7 +194,7 @@ public class OxConfig {
 
     /**
      * Sets the list of modes that OxConfig will store values for. If not called,
-     * defaults to Presentation, Competition, Testing, and Simulation.
+     * defaults to Presentation, Competition, and Simulation.
      * Simulation will be automatically added to the list of modes if not present.
      * Call before OxConfig.initialize().
      * 
