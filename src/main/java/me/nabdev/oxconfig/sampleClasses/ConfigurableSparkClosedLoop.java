@@ -20,7 +20,7 @@ import me.nabdev.oxconfig.OxConfig;
  * This class is an example of how to use the ConfigurableClass interface, but
  * is safe for competition use.
  */
-public class ConfigureableSparkClosedLoop implements ConfigurableClass {
+public class ConfigurableSparkClosedLoop implements ConfigurableClass {
     private ConfigurableClassParam<Double> kpParam;
     private ConfigurableClassParam<Double> kiParam;
     private ConfigurableClassParam<Double> kdParam;
@@ -46,7 +46,7 @@ public class ConfigureableSparkClosedLoop implements ConfigurableClass {
      * @param controller The controller to be configured
      * @param key        The json key for the controller to be stored in
      */
-    public ConfigureableSparkClosedLoop(SparkBaseConfig config, SparkBaseConfigAccessor accessor, SparkBase controller,
+    public ConfigurableSparkClosedLoop(SparkBaseConfig config, SparkBaseConfigAccessor accessor, SparkBase controller,
             String key) {
         initialize(config, accessor, controller, key, key);
     }
@@ -61,7 +61,7 @@ public class ConfigureableSparkClosedLoop implements ConfigurableClass {
      * @param key        The json key for the controller to be stored in
      * @param prettyName The display name of this controller
      */
-    public ConfigureableSparkClosedLoop(SparkBaseConfig config, SparkBaseConfigAccessor accessor, SparkBase controller,
+    public ConfigurableSparkClosedLoop(SparkBaseConfig config, SparkBaseConfigAccessor accessor, SparkBase controller,
             String key, String prettyName) {
         initialize(config, accessor, controller, key, prettyName);
     }
