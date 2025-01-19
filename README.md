@@ -37,7 +37,7 @@ maven {
 ```
 
 After adding the repo, add the following to dependencies in your build.grade:
-`implementation 'me.nabdev.oxconfig:oxconfig-wpi:1.3.0-SNAPSHOT'`
+`implementation 'me.nabdev.oxconfig:oxconfig-wpi:1.3.1'`
 
 ## Links
 
