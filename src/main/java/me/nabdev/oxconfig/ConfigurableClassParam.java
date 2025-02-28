@@ -12,6 +12,7 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
     private final Consumer<T> setter;
     private final String key;
     private final String prettyName;
+    private final ConfigurableClass myClass;
 
     /**
      * Sets the value of the parameter and calls the setter method
@@ -47,7 +48,7 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
     }
 
     String getKey() {
-        return key;
+        return myClass.getKey() + "/" + key;
     }
 
     String getPrettyName() {
@@ -75,7 +76,8 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
         }
         value = val;
         this.setter = setter;
-        this.key = myClass.getKey() + "/" + key;
+        this.key = key;
+        this.myClass = myClass;
         String[] split = key.split("/");
         this.prettyName = split[split.length - 1];
     }
@@ -101,7 +103,8 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
         value = val;
         this.setter = (T t) -> {
         };
-        this.key = myClass.getKey() + "/" + key;
+        this.key = key;
+        this.myClass = myClass;
         String[] split = key.split("/");
         this.prettyName = split[split.length - 1];
     }
