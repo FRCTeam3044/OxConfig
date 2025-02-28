@@ -1,6 +1,6 @@
 package me.nabdev.oxconfig;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interface for classes that can be automatically configured by OxConfig
@@ -14,10 +14,10 @@ public interface ConfigurableClass {
      * 
      * @return The parameters of the configurable class
      */
-    ArrayList<ConfigurableClassParam<?>> getParameters();
+    List<ConfigurableClassParam<?>> getParameters();
 
     /**
-     * Gets the key of the configurable class (e.g. "leftWheelSpeed"), must not
+     * Gets the key of the configurable class (e.g. "Arm"), must not
      * include commas
      * 
      * @return The key of the configurable class
@@ -29,5 +29,7 @@ public interface ConfigurableClass {
      * 
      * @return The pretty name of the configurable class
      */
-    String getPrettyName();
+    default String getPrettyName() {
+        return getKey();
+    };
 }

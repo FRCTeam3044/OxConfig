@@ -1,7 +1,6 @@
 package me.nabdev.oxconfig.sampleClasses;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -15,12 +14,12 @@ import me.nabdev.oxconfig.OxConfig;
  * competition use.
  */
 public class ConfigurableProfiledPIDController extends ProfiledPIDController implements ConfigurableClass {
-    private ConfigurableClassParam<Double> kpParam;
-    private ConfigurableClassParam<Double> kiParam;
-    private ConfigurableClassParam<Double> kdParam;
+    private ConfigurableClassParam<Double> kpParam = new ConfigurableClassParam<>(this, 0.0, this::setP, "P");
+    private ConfigurableClassParam<Double> kiParam = new ConfigurableClassParam<>(this, 0.0, this::setI, "I");
+    private ConfigurableClassParam<Double> kdParam = new ConfigurableClassParam<>(this, 0.0, this::setD, "D");
     private String key;
     private String prettyName;
-    private final ArrayList<ConfigurableClassParam<?>> params = new ArrayList<>();
+    private final List<ConfigurableClassParam<?>> params = List.of(kpParam, kiParam, kdParam);
 
     /**
      * Allocates a ConfigurableProfiledPIDController and registers it to OxConfig
@@ -37,7 +36,9 @@ public class ConfigurableProfiledPIDController extends ProfiledPIDController imp
     public ConfigurableProfiledPIDController(double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints,
             String key) {
         super(Kp, Ki, Kd, constraints);
-        initialize(Kp, Ki, Kd, key, key);
+        this.key = key;
+        this.prettyName = key;
+        OxConfig.registerConfigurableClass(this);
     }
 
     /**
@@ -56,21 +57,14 @@ public class ConfigurableProfiledPIDController extends ProfiledPIDController imp
     public ConfigurableProfiledPIDController(double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints,
             String key, String prettyName) {
         super(Kp, Ki, Kd, constraints);
-        initialize(Kp, Ki, Kd, key, prettyName);
-    }
-
-    private void initialize(double kp, double ki, double kd, String key, String prettyName) {
+        String[] keys = key.split("/");
         this.key = key;
-        this.prettyName = prettyName;
-        kpParam = new ConfigurableClassParam<>(this, kp, this::setP, "P");
-        kiParam = new ConfigurableClassParam<>(this, ki, this::setI, "I");
-        kdParam = new ConfigurableClassParam<>(this, kd, this::setD, "D");
-        Collections.addAll(params, kpParam, kiParam, kdParam);
+        this.prettyName = keys[keys.length - 1];
         OxConfig.registerConfigurableClass(this);
     }
 
     @Override
-    public ArrayList<ConfigurableClassParam<?>> getParameters() {
+    public List<ConfigurableClassParam<?>> getParameters() {
         return params;
     }
 

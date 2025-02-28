@@ -1,7 +1,6 @@
 package me.nabdev.oxconfig.sampleClasses;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -29,7 +28,7 @@ public class ConfigurableSparkClosedLoop implements ConfigurableClass {
     private ConfigurableClassParam<Double> minParam;
     private ConfigurableClassParam<Double> maxParam;
 
-    private final ArrayList<ConfigurableClassParam<?>> params = new ArrayList<>();
+    private List<ConfigurableClassParam<?>> params;
 
     private SparkBaseConfig sparkConfig;
     private ClosedLoopConfig myConfig;
@@ -113,12 +112,12 @@ public class ConfigurableSparkClosedLoop implements ConfigurableClass {
             controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         }, "Max");
 
-        Collections.addAll(params, kpParam, kiParam, kdParam, iZoneParam, FFParam, minParam, maxParam);
+        params = List.of(kpParam, kiParam, kdParam, iZoneParam, FFParam, minParam, maxParam);
         OxConfig.registerConfigurableClass(this);
     }
 
     @Override
-    public ArrayList<ConfigurableClassParam<?>> getParameters() {
+    public List<ConfigurableClassParam<?>> getParameters() {
         return params;
     }
 

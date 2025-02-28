@@ -1,8 +1,8 @@
 package me.nabdev.oxconfig;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -83,7 +83,7 @@ class NT4Interface {
             classArr.put(configClass.getPrettyName());
             classArr.put(configClassKey);
 
-            ArrayList<ConfigurableClassParam<?>> parameters = configClass.getParameters();
+            List<ConfigurableClassParam<?>> parameters = configClass.getParameters();
             for (ConfigurableClassParam<?> param : parameters) {
                 JSONArray paramArr = new JSONArray();
                 paramArr.put(param.getPrettyName());

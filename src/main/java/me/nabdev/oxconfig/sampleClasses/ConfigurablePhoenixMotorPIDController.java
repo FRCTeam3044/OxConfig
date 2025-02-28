@@ -1,7 +1,6 @@
 package me.nabdev.oxconfig.sampleClasses;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 
@@ -15,13 +14,14 @@ import me.nabdev.oxconfig.OxConfig;
  * is safe for competition use.
  */
 public class ConfigurablePhoenixMotorPIDController implements ConfigurableClass {
-    private ConfigurableClassParam<Double> kpParam;
-    private ConfigurableClassParam<Double> kiParam;
-    private ConfigurableClassParam<Double> kdParam;
-    private ConfigurableClassParam<Double> iZoneParam;
-    private ConfigurableClassParam<Double> FFParam;
+    private ConfigurableClassParam<Double> kpParam = new ConfigurableClassParam<>(this, 0.0, this::setP, "P");
+    private ConfigurableClassParam<Double> kiParam = new ConfigurableClassParam<>(this, 0.0, this::setI, "I");
+    private ConfigurableClassParam<Double> kdParam = new ConfigurableClassParam<>(this, 0.0, this::setD, "D");
+    private ConfigurableClassParam<Double> iZoneParam = new ConfigurableClassParam<>(this, 0.0, this::setIZone,
+            "IZone");
+    private ConfigurableClassParam<Double> FFParam = new ConfigurableClassParam<>(this, 0.0, this::setFF, "FF");
 
-    private final ArrayList<ConfigurableClassParam<?>> params = new ArrayList<>();
+    private final List<ConfigurableClassParam<?>> params = List.of(kpParam, kiParam, kdParam, iZoneParam, FFParam);
 
     private BaseMotorController motorController;
 
@@ -36,7 +36,10 @@ public class ConfigurablePhoenixMotorPIDController implements ConfigurableClass 
      */
     public ConfigurablePhoenixMotorPIDController(BaseMotorController controller, String key) {
         String[] keys = key.split("/");
-        initialize(controller, key, keys[keys.length - 1]);
+        this.key = key;
+        this.prettyName = keys[keys.length - 1];
+        motorController = controller;
+        OxConfig.registerConfigurableClass(this);
     }
 
     /**
@@ -47,19 +50,9 @@ public class ConfigurablePhoenixMotorPIDController implements ConfigurableClass 
      * @param prettyName The display name of this controller
      */
     public ConfigurablePhoenixMotorPIDController(BaseMotorController controller, String key, String prettyName) {
-        initialize(controller, key, prettyName);
-    }
-
-    private void initialize(BaseMotorController controller, String key, String prettyName) {
         this.key = key;
         this.prettyName = prettyName;
         motorController = controller;
-        kpParam = new ConfigurableClassParam<>(this, 0.0, this::setP, "P");
-        kiParam = new ConfigurableClassParam<>(this, 0.0, this::setI, "I");
-        kdParam = new ConfigurableClassParam<>(this, 0.0, this::setD, "D");
-        iZoneParam = new ConfigurableClassParam<>(this, 0.0, this::setIZone, "IZone");
-        FFParam = new ConfigurableClassParam<>(this, 0.0, this::setFF, "FF");
-        Collections.addAll(params, kpParam, kiParam, kdParam, iZoneParam, FFParam);
         OxConfig.registerConfigurableClass(this);
     }
 
@@ -84,7 +77,7 @@ public class ConfigurablePhoenixMotorPIDController implements ConfigurableClass 
     }
 
     @Override
-    public ArrayList<ConfigurableClassParam<?>> getParameters() {
+    public List<ConfigurableClassParam<?>> getParameters() {
         return params;
     }
 

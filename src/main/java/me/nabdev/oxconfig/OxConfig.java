@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -289,7 +290,7 @@ public class OxConfig {
      */
     public static void registerConfigurableClass(ConfigurableClass configurableClass) {
         configurableClasses.put(configurableClass.getKey(), configurableClass);
-        ArrayList<ConfigurableClassParam<?>> parameters = configurableClass.getParameters();
+        List<ConfigurableClassParam<?>> parameters = configurableClass.getParameters();
         parameters.forEach(parameter -> registerClassParameter(
                 parameter.getKey(),
                 parameter));
