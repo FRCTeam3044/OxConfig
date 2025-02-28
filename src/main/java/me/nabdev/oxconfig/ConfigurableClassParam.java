@@ -71,9 +71,6 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
         if (val.toString().contains(",")) {
             throw new IllegalArgumentException("Value must not contain commas: " + val);
         }
-        if (myClass.getKey().contains(",")) {
-            throw new IllegalArgumentException("Key must not contain commas: " + myClass.getKey());
-        }
         value = val;
         this.setter = setter;
         this.key = key;
@@ -96,9 +93,6 @@ public class ConfigurableClassParam<T> implements Configurable<T> {
         }
         if (val.toString().contains(",")) {
             throw new IllegalArgumentException("Value must not contain commas: " + val);
-        }
-        if (myClass.getKey().contains(",")) {
-            throw new IllegalArgumentException("Key must not contain commas: " + myClass.getKey());
         }
         value = val;
         this.setter = (T t) -> {
