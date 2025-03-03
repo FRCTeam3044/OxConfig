@@ -158,7 +158,9 @@ class JsonUtils {
 
         dirty = true;
         OxConfig.hasModified = true;
-        OxConfig.pendingNTUpdate = true;
+        synchronized (OxConfig.class) {
+            OxConfig.pendingNTUpdate = true;
+        }
     }
 
     /**
@@ -180,6 +182,8 @@ class JsonUtils {
 
         dirty = true;
         OxConfig.hasModified = true;
-        OxConfig.pendingNTUpdate = true;
+        synchronized (OxConfig.class) {
+            OxConfig.pendingNTUpdate = true;
+        }
     }
 }

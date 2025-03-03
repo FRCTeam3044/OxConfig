@@ -1,8 +1,8 @@
 package me.nabdev.oxconfig;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -75,7 +75,7 @@ class NT4Interface {
         return mode;
     }
 
-    static void updateClasses(HashMap<String, ConfigurableClass> configurableClasses) {
+    static void updateClasses(Map<String, ConfigurableClass> configurableClasses) {
         JSONArray classes = new JSONArray();
         for (String configClassKey : configurableClasses.keySet()) {
             JSONArray classArr = new JSONArray();
@@ -101,7 +101,7 @@ class NT4Interface {
         table.getEntry("Classes").setString(classes.toString());
     }
 
-    static void updateParameters(HashMap<String, ConfigurableParameter<?>> parameters) {
+    static void updateParameters(Map<String, ConfigurableParameter<?>> parameters) {
         JSONArray params = new JSONArray();
         for (String paramKey : parameters.keySet()) {
             if (paramKey.equalsIgnoreCase("root/mode")) {

@@ -4,8 +4,9 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -82,9 +83,9 @@ public class OxConfig {
     /* Config Mapping Declarations */
     static JSONObject config;
     static String configString;
-    private static final HashMap<String, Configurable<?>> configValues = new HashMap<>();
-    private static final HashMap<String, ConfigurableClass> configurableClasses = new HashMap<>();
-    private static final HashMap<String, ConfigurableParameter<?>> configurableParameters = new HashMap<>();
+    private static final Map<String, Configurable<?>> configValues = new ConcurrentHashMap<>();
+    private static final Map<String, ConfigurableClass> configurableClasses = new ConcurrentHashMap<>();
+    private static final Map<String, ConfigurableParameter<?>> configurableParameters = new ConcurrentHashMap<>();
 
     /**
      * The current modeSelector, used to determine which config values to use
@@ -311,7 +312,9 @@ public class OxConfig {
         if (hasInitialized) {
             shouldEnsure = ensureMode == EnsureMode.Never ? false : true;
             reload();
-            pendingNTUpdate = true;
+            synchronized (OxConfig.class) {
+                pendingNTUpdate = true;
+            }
         }
     }
 
@@ -326,6 +329,13 @@ public class OxConfig {
      */
     public static void registerClassParameter(String key, ConfigurableClassParam<?> parameter) {
         configValues.put(key, parameter);
+        if (hasInitialized) {
+            shouldEnsure = ensureMode == EnsureMode.Never ? false : true;
+            reload();
+            synchronized (OxConfig.class) {
+                pendingNTUpdate = true;
+            }
+        }
     }
 
     private static void reloadFromFile() {
@@ -420,8 +430,14 @@ public class OxConfig {
             return;
         TaskTimer timer = new TaskTimer();
         handleKeySetter();
-        if (pendingNTUpdate) {
-            pendingNTUpdate = false;
+        boolean shouldUpdate = false;
+        synchronized (OxConfig.class) {
+            shouldUpdate = pendingNTUpdate;
+            if (shouldUpdate) {
+                pendingNTUpdate = false;
+            }
+        }
+        if (shouldUpdate) {
             NT4Interface.updateClasses(configurableClasses);
             timer.logTime("NT Update Classes");
             NT4Interface.updateParameters(configurableParameters);

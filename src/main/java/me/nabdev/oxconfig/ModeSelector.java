@@ -37,7 +37,9 @@ class ModeSelector {
             if (!currentMode.equals(mode)) {
                 currentMode = mode;
                 if (OxConfig.hasInitialized) {
-                    OxConfig.pendingNTUpdate = true;
+                    synchronized (OxConfig.class) {
+                        OxConfig.pendingNTUpdate = true;
+                    }
                     OxConfig.reload();
                 }
             }
