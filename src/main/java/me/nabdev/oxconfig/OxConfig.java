@@ -465,7 +465,14 @@ public class OxConfig {
                     continue;
                 }
                 String sourceVal = JsonUtils.getRealValue(source, key, configurable.shouldStoreComment());
-                JsonUtils.modifyValue(destMode, key, sourceVal);
+                if (!configurable.shouldStoreComment()) {
+                    JsonUtils.modifyValue(destMode, key, sourceVal);
+                } else {
+                    JSONObject data = JsonUtils.getJSONObject(source, key);
+                    JsonUtils.modifyValue(destMode, key, sourceVal,
+                            data.has("comment") ? data.getString("comment") : "Auto-Generated");
+                }
+
                 updateSingleKey(key);
             }
         }
