@@ -430,6 +430,7 @@ public class OxConfig {
             return;
         TaskTimer timer = new TaskTimer();
         handleKeySetter();
+        handleCopyAll();
         boolean shouldUpdate = false;
         synchronized (OxConfig.class) {
             shouldUpdate = pendingNTUpdate;
@@ -447,6 +448,26 @@ public class OxConfig {
             JsonUtils.updateConfigStr();
             NT4Interface.updateRaw(configString);
             timer.logTime("NT Update Raw");
+        }
+    }
+
+    private static void handleCopyAll() {
+        String copyAll = NT4Interface.getCopyAll();
+        if (!copyAll.isEmpty()) {
+            String[] copyAllSet = copyAll.split(",");
+            String sourceMode = copyAllSet[0];
+            String destMode = copyAllSet[1];
+            Logger.logInfo("Received NT update for copyAll " + sourceMode + " to " + destMode);
+            JSONObject source = JsonUtils.getModeMap(sourceMode);
+            for (String key : source.keySet()) {
+                Configurable<?> configurable = configValues.get(key);
+                if (configurable == null) {
+                    continue;
+                }
+                String sourceVal = JsonUtils.getRealValue(source, key, configurable.shouldStoreComment());
+                JsonUtils.modifyValue(destMode, key, sourceVal);
+                updateSingleKey(key);
+            }
         }
     }
 

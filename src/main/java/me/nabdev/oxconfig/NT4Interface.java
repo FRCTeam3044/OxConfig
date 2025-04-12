@@ -22,7 +22,7 @@ class NT4Interface {
     private static final NetworkTableEntry classSetterEntry;
     private static final NetworkTableEntry modeSetterEntry;
     private static final NetworkTableEntry rawEntry;
-
+    private static final NetworkTableEntry copyAllEntry;
     private static final NetworkTableEntry currentModeEntry;
     private static final NetworkTable profiling;
     static boolean hasInitialized = false;
@@ -37,6 +37,7 @@ class NT4Interface {
         rawEntry = table.getEntry("Raw");
         currentModeEntry = table.getEntry("CurrentMode");
         profiling = table.getSubTable("Profiling");
+        copyAllEntry = table.getEntry("CopyAll");
     }
 
     static void initialize() {
@@ -44,6 +45,7 @@ class NT4Interface {
         keySetterEntry.setString("");
         classSetterEntry.setString("");
         modeSetterEntry.setString("");
+        copyAllEntry.setString("");
         modesEntry.setString(String.join(",", ModeSelector.modes));
     }
 
@@ -73,6 +75,14 @@ class NT4Interface {
             modeSetterEntry.setString("");
         }
         return mode;
+    }
+
+    static String getCopyAll() {
+        String copyAll = copyAllEntry.getString("");
+        if (!copyAll.isEmpty()) {
+            copyAllEntry.setString("");
+        }
+        return copyAll;
     }
 
     static void updateClasses(Map<String, ConfigurableClass> configurableClasses) {
