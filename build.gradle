@@ -1,11 +1,11 @@
 plugins {
     id 'java-library'
-    id "edu.wpi.first.GradleRIO" version "2025.3.2"
+    id "edu.wpi.first.GradleRIO" version "2026.2.1"
     id 'maven-publish'
 }
 
 group 'me.nabdev.oxconfig'
-version '1.5.1'
+version '1.6.0'
 
 java {
   sourceCompatibility = '1.11'

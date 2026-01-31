@@ -2,9 +2,9 @@ package me.nabdev.oxconfig.sampleClasses;
 
 import java.util.List;
 
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.PersistMode;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.ClosedLoopConfigAccessor;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -99,10 +99,10 @@ public class ConfigurableSparkClosedLoop implements ConfigurableClass {
             myConfig.iZone(val);
             controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         }, "IZone");
-        FFParam = new ConfigurableClassParam<>(this, closedLoop.getFF(), (Double val) -> {
-            myConfig.velocityFF(val);
+        FFParam = new ConfigurableClassParam<>(this, closedLoop.feedForward.getkV(), (Double val) -> {
+            myConfig.feedForward.kV(val);
             controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        }, "FF");
+        }, "FFkV");
         minParam = new ConfigurableClassParam<>(this, closedLoop.getMinOutput(), (Double val) -> {
             myConfig.minOutput(val);
             controller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
