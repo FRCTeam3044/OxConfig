@@ -16,9 +16,11 @@ public class ConfigurablePIDController extends PIDController implements Configur
     private ConfigurableClassParam<Double> kpParam = new ConfigurableClassParam<>(this, 0.0, this::setP, "P");
     private ConfigurableClassParam<Double> kiParam = new ConfigurableClassParam<>(this, 0.0, this::setI, "I");
     private ConfigurableClassParam<Double> kdParam = new ConfigurableClassParam<>(this, 0.0, this::setD, "D");
+    private ConfigurableClassParam<Double> toleranceParam = new ConfigurableClassParam<>(this, 0.05, this::setTolerance,
+            "Tolerance");
     private String key;
     private String prettyName;
-    private final List<ConfigurableClassParam<?>> params = List.of(kpParam, kiParam, kdParam);
+    private final List<ConfigurableClassParam<?>> params = List.of(kpParam, kiParam, kdParam, toleranceParam);
 
     /**
      * Allocates a ConfigurablePIDController and registers it to OxConfig with the
