@@ -44,7 +44,6 @@ After adding the repo, add the following to dependencies in your build.grade:
 - [JSON-java](https://github.com/stleary/JSON-java)
 - [allwpilib](https://github.com/wpilibsuite/allwpilib)
 - [REV Lib](https://docs.revrobotics.com/sparkmax/software-resources/spark-max-api-information)
-- [CTRE Lib](https://pro.docs.ctr-electronics.com/en/latest/)
 
 Questions, suggestions, bug reports, or just want to chat? **Join the
 [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support,
